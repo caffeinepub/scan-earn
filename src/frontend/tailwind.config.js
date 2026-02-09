@@ -69,11 +69,14 @@ export default {
             },
             borderRadius: {
                 lg: 'var(--radius)',
-                md: 'calc(var(--radius) - 2px)',
-                sm: 'calc(var(--radius) - 4px)'
+                md: 'calc(var(--radius) - 4px)',
+                sm: 'calc(var(--radius) - 8px)'
             },
             boxShadow: {
-                xs: '0 1px 2px 0 rgba(0,0,0,0.05)'
+                'premium-sm': '0 2px 8px -2px rgba(0,0,0,0.08), 0 1px 4px -1px rgba(0,0,0,0.04)',
+                'premium-md': '0 4px 16px -4px rgba(0,0,0,0.12), 0 2px 8px -2px rgba(0,0,0,0.06)',
+                'premium-lg': '0 8px 32px -8px rgba(0,0,0,0.16), 0 4px 16px -4px rgba(0,0,0,0.08)',
+                'premium-xl': '0 12px 48px -12px rgba(0,0,0,0.20), 0 6px 24px -6px rgba(0,0,0,0.10)'
             },
             keyframes: {
                 'accordion-down': {
@@ -83,17 +86,30 @@ export default {
                 'accordion-up': {
                     from: { height: 'var(--radix-accordion-content-height)' },
                     to: { height: '0' }
+                },
+                'fade-in': {
+                    from: { opacity: '0' },
+                    to: { opacity: '1' }
+                },
+                'slide-up': {
+                    from: { transform: 'translateY(10px)', opacity: '0' },
+                    to: { transform: 'translateY(0)', opacity: '1' }
                 }
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
-                'accordion-up': 'accordion-up 0.2s ease-out'
+                'accordion-up': 'accordion-up 0.2s ease-out',
+                'fade-in': 'fade-in 0.3s ease-out',
+                'slide-up': 'slide-up 0.4s ease-out'
             },
             fontFamily: {
-                sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+                sans: ['Inter var', 'Inter', 'system-ui', '-apple-system', 'sans-serif']
+            },
+            spacing: {
+                '18': '4.5rem',
+                '88': '22rem'
             }
         }
     },
     plugins: [typography, containerQueries, animate]
 };
-

@@ -10,13 +10,16 @@ export function formatCoins(coins: number | bigint): string {
   return num.toLocaleString('en-IN');
 }
 
-export function validatePhoneNumber(phone: string): boolean {
-  // Indian phone number: 10 digits
-  const cleaned = phone.replace(/\D/g, '');
-  return cleaned.length === 10;
-}
+export function validateCtrId(ctrId: string): { valid: boolean; error?: string } {
+  // Check length - must be exactly 7 digits
+  if (ctrId.length !== 7) {
+    return { valid: false, error: 'CTR ID must be exactly 7 digits' };
+  }
 
-export function normalizePhoneNumber(phone: string): string {
-  return phone.replace(/\D/g, '');
-}
+  // Check if all characters are digits
+  if (!/^\d{7}$/.test(ctrId)) {
+    return { valid: false, error: 'CTR ID must contain only digits' };
+  }
 
+  return { valid: true };
+}

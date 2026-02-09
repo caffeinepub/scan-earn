@@ -1,98 +1,55 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-09T06:19:12.604Z",
-  "summary": "Most of the single-page frontend sections and the simulated add-funds modal + coin counter are implemented, along with basic Motoko storage for a per-caller profile and transaction-id de-duplication. However, key flow/data requirements are missing or mismatched: backend state is tied to Principal rather than phone number, scan events are not recorded, wallet balance is not displayed, and the app gating relies on a zustand flag that won’t persist across reloads. Additionally, Internet Identity-based authentication was added even though third-party auth providers were disallowed, and several extra backend endpoints/features appear unrequested.",
+  "generatedAt": "2026-02-09T07:57:17.703Z",
+  "summary": "Diff implements WhatsApp redirect with URL-encoded prefilled message and adds frontend/backend wiring for a CTR-registered gating check. However, several core requirements are only partially met: backend registration does not persist across upgrades and uses Principals rather than the required 7-digit CTR value; the frontend connect mutation ignores the entered CTR; and the CTR connect UI validation/UX requirements cannot be fully verified from the truncated diff (and appears to miss uppercasing storage/display of the access code and possibly input restrictions/disabled Connect behavior).",
   "missing_requirements": [
     {
-      "id": "REQ-7",
-      "requirement": "Record scan completion in backend state for the connected phone number (e.g., lastScanAt and/or scanCount), and (optionally) award coins so the hero counter updates.",
-      "reason": "The ScanRewards UI is purely local state with timeouts and does not call any React Query mutation or any backend method; backend also shows no scan-recording API in the visible portion.",
+      "id": "REQ-1",
+      "requirement": "CTR connect flow UI must require a CTR that is exactly 7 digits and an access code equal to \"IQL0918\" (case-insensitive OK but store/display uppercased); user cannot proceed unless both pass; CTR input only digits limited to 7; Connect disabled until valid; clear English errors; remove old 13-char/IN copy.",
+      "reason": "Only partial evidence is present. While the component adds an access code field and references a 7-digit CTR in description, the diff is truncated before showing CTR Input constraints (digits-only and maxLength=7) and whether the Connect button is disabled until validations pass. Also, the access code is validated case-insensitively but the value is not stored/displayed uppercased (state is kept as entered).",
       "evidence": [
-        "frontend/src/components/scan-earn/ScanRewards.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "backend/main.mo"
+        "frontend/src/components/scan-earn/CtrConnect.tsx (truncated)"
       ]
     },
     {
-      "id": "REQ-8",
-      "requirement": "Updated coin balance appears consistently in the hero coin counter and wallet balance display without a full page reload; flow gating should work after reload/reconnect.",
-      "reason": "Wallet component shown does not display coin balance. Also, the main page renders tiers/wallet/scan only when zustand `isPhoneConnected` is true, but that flag resets on reload and is not derived from backend `isUserConnected`, so reconnecting after reload may not reveal the rest of the flow.",
-      "evidence": [
-        "frontend/src/components/scan-earn/Wallet.tsx",
-        "frontend/src/App.tsx",
-        "frontend/src/state/flowStore.ts",
-        "frontend/src/components/scan-earn/PhoneConnect.tsx"
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "requirement": "Backend associates user state (coin balance, bank details, pending payments) to the connected phone number and supports per-phone user profile access.",
-      "reason": "Backend stores users in a `Map<Principal, UserProfile>` keyed by caller Principal, not by phone number, and exposes methods that operate only on `caller`. There is no API to get/create user by phone number as the primary key (or to look up by phone).",
+      "id": "REQ-3",
+      "requirement": "Backend support for CTR registration: register/connect CTR for caller and query registered status; enforce one CTR per principal and uniqueness across principals; preserve state across canister upgrades (migration if needed).",
+      "reason": "Backend adds registration and query methods and enforces uniqueness, but stores maps in non-stable variables and provides no preupgrade/postupgrade (or stable data structure) to preserve state across upgrades. Also, it registers a CTR as a Principal, not a 7-digit CTR identifier string/number.",
       "evidence": [
         "backend/main.mo"
       ]
     },
     {
-      "id": "REQ-9",
-      "requirement": "Backend stores selected tier (optional) as part of user profile/state.",
-      "reason": "UserProfile type includes phoneNumber, coinBalance, bankAccount, transactionHistory only; there is no selected-tier field or setter/getter API shown.",
+      "id": "REQ-4",
+      "requirement": "Wire existing React Query hooks so CTR connect UI can actually connect and app detects connected state after refresh/reload.",
+      "reason": "Although hooks now call actor.registerCTR and query actor.isCTRRegistered, the connect mutation does not actually register the user-entered CTR value: it constructs an anonymous principal and ignores the provided ctrId. This prevents correct per-CTR enforcement and means the UI is not truly connecting the entered CTR.",
       "evidence": [
-        "backend/main.mo"
+        "frontend/src/hooks/useQueries.ts (truncated)",
+        "frontend/src/components/scan-earn/CtrConnect.tsx (truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Internet Identity authentication/provider and identity-based actor recreation/invalidation logic.",
-      "reason": "BuildRequest explicitly constrained: “Do not add third-party authentication providers; phone connect is a local app step.” The diff introduces Internet Identity (AuthClient, II provider) and uses identity principals for backend association.",
+      "description": "Backend CTR registration implemented as mapping principal->Principal (CTR canister principal) and reverse mapping, rather than a 7-digit CTR value.",
+      "reason": "BuildRequest describes enforcing “Only per CTR Registered user” with a CTR value in the frontend that is exactly 7 digits. The diff implements a different model (CTR as Principal) and the frontend mutation registers a placeholder Principal unrelated to the entered 7-digit CTR.",
       "evidence": [
-        "frontend/src/hooks/useInternetIdentity.ts",
-        "frontend/src/hooks/useActor.ts",
-        "frontend/src/main.tsx"
-      ]
-    },
-    {
-      "description": "Backend endpoints not requested: getTransactionHistoryForUser(user: Principal), updatePhoneNumber, and withdrawCoins.",
-      "reason": "These APIs are not part of REQ-9’s required methods (get/create by phone, get balance, set bank details, submit transaction, record scans).",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "description": "Footer branding/link (“© 2026… caffeine.ai” with a heart).",
-      "reason": "Not requested in any requirement and introduces additional external branding content.",
-      "evidence": [
-        "frontend/src/App.tsx"
+        "backend/main.mo",
+        "frontend/src/hooks/useQueries.ts (truncated)"
       ]
     }
   ],
   "confidence": 0.74,
   "changed_files": [
-    "all_files_summary.json",
     "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.css",
-    "frontend/index.html",
     "frontend/src/App.tsx",
-    "frontend/src/components/scan-earn/AddFundsModal.tsx",
-    "frontend/src/components/scan-earn/CoinCounter.tsx",
-    "frontend/src/components/scan-earn/Hero.tsx",
-    "frontend/src/components/scan-earn/PhoneConnect.tsx",
-    "frontend/src/components/scan-earn/RewardCalculator.tsx",
+    "frontend/src/components/scan-earn/CtrConnect.tsx",
     "frontend/src/components/scan-earn/ScanRewards.tsx",
-    "frontend/src/components/scan-earn/Wallet.tsx",
-    "frontend/src/components/scan-earn/index.ts",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useCountUp.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/index.css",
     "frontend/src/lib/format.ts",
-    "frontend/src/lib/utils.ts",
-    "frontend/src/main.tsx",
-    "frontend/src/state/flowStore.ts",
-    "frontend/tailwind.config.js",
+    "frontend/src/utils/whatsapp.ts",
     "project_state.json"
   ]
 }

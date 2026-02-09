@@ -1,282 +1,103 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-09T06:19:12.608Z",
+  "generatedAt": "2026-02-09T07:57:17.706Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 10,
-    "implemented": 9,
+    "total": 6,
+    "implemented": 5,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Create a single-page, mobile-first marketing + product experience for a “Scan & Earn” rewards platform with a modern fintech dark-mode, glassmorphism UI using Electric Blue as the primary accent and Gold for coin-related highlights.",
+        "summary": "Update the CTR connect flow UI to require (a) a CTR value that is exactly 7 digits and (b) an access code that must equal \"IQL0918\" (case-insensitive acceptance is OK, but store/display it uppercased). The user must not be able to proceed/\"Connect\" unless both validations pass, and error messages must be shown in English.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/public/assets/generated/coin-icon.dim_256x256.png",
-          "frontend/public/assets/generated/hero-bg.dim_1920x1080.png",
-          "frontend/public/assets/generated/qr-frame.dim_800x800.png",
-          "frontend/src/App.tsx",
-          "frontend/src/main.tsx"
+          "frontend/src/components/scan-earn/CtrConnect.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/public/assets/generated/coin-icon.dim_256x256.png",
-          "frontend/public/assets/generated/hero-bg.dim_1920x1080.png",
-          "frontend/public/assets/generated/qr-frame.dim_800x800.png",
-          "frontend/src/App.tsx",
-          "frontend/src/main.tsx"
-        ]
-      },
-      {
-        "id": "REQ-10",
-        "summary": "Structure the frontend into modular components (Hero/CoinCounter, PhoneConnect, RewardCalculator, Wallet, AddFundsModal, ScanRewards, shared layout) and use React Query for backend reads/mutations so UI state stays consistent and updates immediately after actions.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/lib/backendClient.ts",
-          "frontend/src/hooks/queryKeys.ts",
-          "frontend/src/components/scan-earn/index.ts",
-          "frontend/src/components/ui/button.tsx",
-          "frontend/src/components/ui/input.tsx",
-          "frontend/src/components/ui/card.tsx",
-          "frontend/src/components/ui/dialog.tsx",
-          "frontend/src/lib/utils.ts",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/scan-earn/index.ts",
-          "frontend/src/lib/utils.ts",
-          "frontend/src/App.tsx"
+          "frontend/src/components/scan-earn/CtrConnect.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Implement the Hero section containing: (1) headline text exactly “Turn Payments into Profits”, (2) a primary CTA button labeled “Scan Now”, and (3) a live “Coin Counter” demo that animates (count-up) when the user earns coins in the app flow.",
+        "summary": "Change CTR validation logic to match the new requirement: CTR must be exactly 7 digits. Remove the previous 13-character + \"IN\" format validation from the validation helper(s) used by the CTR connect flow.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/scan-earn/Hero.tsx",
-          "frontend/src/components/scan-earn/CoinCounter.tsx",
-          "frontend/src/hooks/useCountUp.ts",
-          "frontend/src/App.tsx"
+          "frontend/src/lib/format.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/scan-earn/Hero.tsx",
-          "frontend/src/components/scan-earn/CoinCounter.tsx",
-          "frontend/src/hooks/useCountUp.ts",
-          "frontend/src/App.tsx"
+          "frontend/src/lib/format.ts"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Add a “Connect phone number” step as the first step in the user flow, allowing a user to enter an Indian phone number and proceed (no SMS verification required).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/scan-earn/PhoneConnect.tsx",
-          "frontend/src/hooks/usePhoneConnect.ts",
-          "frontend/src/lib/format.ts",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/scan-earn/PhoneConnect.tsx",
-          "frontend/src/lib/format.ts",
-          "frontend/src/App.tsx"
-        ]
+        "summary": "Implement backend support for CTR registration so that the system can enforce \"Only per CTR Registered user\": add backend methods to (1) connect/register a CTR for the calling principal and (2) query whether the caller is already connected/registered. Enforce that a principal can only register one CTR, and that the same CTR cannot be registered by multiple principals.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-4",
-        "summary": "Build the “Reward Calculator” as an interactive grid of selectable payment tiers using the exact INR→coin mapping: ₹10=15, ₹30=55, ₹50=95, ₹180=390, ₹500=1045, ₹1k=2200. Selecting a tier should set it as the current intended add-funds amount for the flow.",
+        "summary": "Wire the existing React Query hooks for CTR connection to the backend implementation so the CTR connect UI can actually connect and the app can correctly detect connected state after refresh/reload.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/scan-earn/RewardCalculator.tsx",
-          "frontend/src/state/flowStore.ts",
-          "frontend/src/App.tsx"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/App.tsx",
+          "frontend/src/backend.d.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/scan-earn/RewardCalculator.tsx",
-          "frontend/src/state/flowStore.ts",
-          "frontend/src/App.tsx"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/App.tsx",
+          "frontend/src/backend.d.ts"
         ]
       },
       {
         "id": "REQ-5",
-        "summary": "Create a “My Wallet” section that includes: (1) an “Add Bank Account” form and (2) an “Add Funds” button. The bank form should capture standard fields (account holder name, bank name, account number, IFSC) and persist them for the connected phone number.",
+        "summary": "Replace the current simulated scan behavior with a \"Scan\" action that redirects the user to WhatsApp for Indian number +91 9541525891 with a prefilled message that includes exactly: (1) \"Get NFC code of 4 digits\" and (2) \"Code works only: CTTH\" and (3) \"Only per CTR Registered user\". Use an https://wa.me/ link (or equivalent WhatsApp deep link) and URL-encode the message.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/scan-earn/Wallet.tsx",
-          "frontend/src/hooks/useWallet.ts",
-          "frontend/src/App.tsx"
+          "frontend/src/components/scan-earn/ScanRewards.tsx",
+          "frontend/src/utils/whatsapp.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/scan-earn/Wallet.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/components/scan-earn/ScanRewards.tsx",
+          "frontend/src/utils/whatsapp.ts"
         ]
       },
       {
         "id": "REQ-6",
-        "summary": "Implement the GPay/BHIM add-funds gateway popup/modal. When “Add Funds” is clicked, show a popup containing: (1) a QR code, (2) payment number exactly “9541525891”, and (3) a Transaction ID input field with a submit/verify action that drives the coin crediting flow for the selected tier.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/scan-earn/AddFundsModal.tsx",
-          "frontend/src/hooks/useAddFunds.ts",
-          "frontend/src/components/scan-earn/PaymentConfirmedToast.tsx",
-          "frontend/src/components/scan-earn/Wallet.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/scan-earn/AddFundsModal.tsx",
-          "frontend/src/components/scan-earn/Wallet.tsx"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "Add a “Scan Rewards” experience with a simulated camera interface or a “Scan” button that triggers a “Success” animation when a scan is completed and can optionally award coins (or mark scan completion) as part of the demo flow.",
+        "summary": "Ensure scan/redirect is only available to CTR-registered users: if a user is not connected/registered, prevent the WhatsApp redirect and show an English error prompt instructing them to connect/register their CTR first.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/components/scan-earn/ScanRewards.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/components/scan-earn/CtrConnect.tsx"
         ],
         "matchedFiles": [
           "frontend/src/components/scan-earn/ScanRewards.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/components/scan-earn/CtrConnect.tsx"
         ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "Implement the full user flow on a single page: Connect phone number → select payment tier → open GPay/BHIM modal (simulated redirect) → submit Transaction ID → return to the main view with updated coin balance. The coin balance must update in real time across all UI locations where it is shown.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/state/flowStore.ts",
-          "frontend/src/lib/format.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/state/flowStore.ts",
-          "frontend/src/lib/format.ts"
-        ]
-      },
-      {
-        "id": "REQ-9",
-        "summary": "Add backend Motoko data storage and APIs required for: per-phone user profile, coin balance, bank account details, selected tier (optional), and recording submitted Transaction IDs to prevent accidental double-crediting of the same Transaction ID for a given phone number.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
     "build-request.json",
-    "build-template/Dockerfile",
-    "build-template/LICENSE",
-    "build-template/README.md",
-    "build-template/deploy.sh",
-    "build-template/icp.yaml",
-    "build-template/package.json",
-    "build-template/pnpm-lock.yaml",
-    "build-template/pnpm-workspace.yaml",
-    "build-template/scripts/prune-unused-images.js",
-    "build-template/scripts/resize-images.js",
-    "build-template/src/backend/canister.yaml",
-    "build-template/src/backend/system-idl/aaaaa-aa.did",
-    "build-template/src/frontend/canister.yaml",
-    "build-template/src/frontend/components.json",
-    "build-template/src/frontend/env.json",
-    "build-template/src/frontend/eslint-rules/no-bigint-in-query-keys.js",
-    "build-template/src/frontend/eslint-rules/require-internet-identity-provider.js",
-    "build-template/src/frontend/eslint.config.js",
-    "build-template/src/frontend/package.json",
-    "build-template/src/frontend/postcss.config.js",
-    "build-template/src/frontend/src/components/ui/accordion.tsx",
-    "build-template/src/frontend/src/components/ui/alert-dialog.tsx",
-    "build-template/src/frontend/src/components/ui/alert.tsx",
-    "build-template/src/frontend/src/components/ui/aspect-ratio.tsx",
-    "build-template/src/frontend/src/components/ui/avatar.tsx",
-    "build-template/src/frontend/src/components/ui/badge.tsx",
-    "build-template/src/frontend/src/components/ui/breadcrumb.tsx",
-    "build-template/src/frontend/src/components/ui/button.tsx",
-    "build-template/src/frontend/src/components/ui/calendar.tsx",
-    "build-template/src/frontend/src/components/ui/card.tsx",
-    "build-template/src/frontend/src/components/ui/carousel.tsx",
-    "build-template/src/frontend/src/components/ui/chart.tsx",
-    "build-template/src/frontend/src/components/ui/checkbox.tsx",
-    "build-template/src/frontend/src/components/ui/collapsible.tsx",
-    "build-template/src/frontend/src/components/ui/command.tsx",
-    "build-template/src/frontend/src/components/ui/context-menu.tsx",
-    "build-template/src/frontend/src/components/ui/dialog.tsx",
-    "build-template/src/frontend/src/components/ui/drawer.tsx",
-    "build-template/src/frontend/src/components/ui/dropdown-menu.tsx",
-    "build-template/src/frontend/src/components/ui/form.tsx",
-    "build-template/src/frontend/src/components/ui/hover-card.tsx",
-    "build-template/src/frontend/src/components/ui/input-otp.tsx",
-    "build-template/src/frontend/src/components/ui/input.tsx",
-    "build-template/src/frontend/src/components/ui/label.tsx",
-    "build-template/src/frontend/src/components/ui/menubar.tsx",
-    "build-template/src/frontend/src/components/ui/navigation-menu.tsx",
-    "build-template/src/frontend/src/components/ui/pagination.tsx",
-    "build-template/src/frontend/src/components/ui/popover.tsx",
-    "build-template/src/frontend/src/components/ui/progress.tsx",
-    "build-template/src/frontend/src/components/ui/radio-group.tsx",
-    "build-template/src/frontend/src/components/ui/resizable.tsx",
-    "build-template/src/frontend/src/components/ui/scroll-area.tsx",
-    "build-template/src/frontend/src/components/ui/select.tsx",
-    "build-template/src/frontend/src/components/ui/separator.tsx",
-    "build-template/src/frontend/src/components/ui/sheet.tsx",
-    "build-template/src/frontend/src/components/ui/sidebar.tsx",
-    "build-template/src/frontend/src/components/ui/skeleton.tsx",
-    "build-template/src/frontend/src/components/ui/slider.tsx",
-    "build-template/src/frontend/src/components/ui/sonner.tsx",
-    "build-template/src/frontend/src/components/ui/switch.tsx",
-    "build-template/src/frontend/src/components/ui/table.tsx",
-    "build-template/src/frontend/src/components/ui/tabs.tsx",
-    "build-template/src/frontend/src/components/ui/textarea.tsx",
-    "build-template/src/frontend/src/components/ui/toggle-group.tsx",
-    "build-template/src/frontend/src/components/ui/toggle.tsx",
-    "build-template/src/frontend/src/components/ui/tooltip.tsx",
-    "build-template/src/frontend/src/hooks/use-mobile.tsx",
-    "build-template/src/frontend/src/lib/utils.ts",
-    "build-template/src/frontend/tsconfig.json",
-    "build-template/src/frontend/vite.config.js",
-    "build-template/tsconfig.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/index.css",
-    "frontend/index.html",
-    "frontend/public/assets/generated/coin-icon.dim_256x256.png",
-    "frontend/public/assets/generated/hero-bg.dim_1920x1080.png",
-    "frontend/public/assets/generated/qr-frame.dim_800x800.png",
     "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/scan-earn/AddFundsModal.tsx",
-    "frontend/src/components/scan-earn/CoinCounter.tsx",
-    "frontend/src/components/scan-earn/Hero.tsx",
-    "frontend/src/components/scan-earn/PhoneConnect.tsx",
-    "frontend/src/components/scan-earn/RewardCalculator.tsx",
+    "frontend/src/components/scan-earn/CtrConnect.tsx",
     "frontend/src/components/scan-earn/ScanRewards.tsx",
-    "frontend/src/components/scan-earn/Wallet.tsx",
-    "frontend/src/components/scan-earn/index.ts",
-    "frontend/src/config.ts",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useCountUp.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/index.css",
     "frontend/src/lib/format.ts",
-    "frontend/src/lib/utils.ts",
-    "frontend/src/main.tsx",
-    "frontend/src/state/flowStore.ts",
-    "frontend/src/ui-summary.json",
-    "frontend/src/utils/StorageClient.ts",
-    "frontend/tailwind.config.js",
+    "frontend/src/utils/whatsapp.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -13,6 +13,7 @@ import { useAddFunds } from '../../hooks/useQueries';
 import { useFlowStore } from '../../state/flowStore';
 import { formatINR, formatCoins } from '../../lib/format';
 import { QrCode, Copy, CheckCircle2 } from 'lucide-react';
+import { SiPhonepe, SiPaytm } from 'react-icons/si';
 import { toast } from 'sonner';
 
 interface AddFundsModalProps {
@@ -20,19 +21,34 @@ interface AddFundsModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const PAYMENT_NUMBER = '9541525891';
+const UPI_ID = 'turbohacker4-2@okhdfcbank';
+const PAYEE_NAME = 'Iqlas Dar';
 
 export function AddFundsModal({ open, onOpenChange }: AddFundsModalProps) {
   const [transactionId, setTransactionId] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [copiedUPI, setCopiedUPI] = useState(false);
   const addFundsMutation = useAddFunds();
   const { selectedTier } = useFlowStore();
 
-  const handleCopyNumber = () => {
-    navigator.clipboard.writeText(PAYMENT_NUMBER);
-    setCopied(true);
-    toast.success('Payment number copied!');
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopyUPI = () => {
+    navigator.clipboard.writeText(UPI_ID);
+    setCopiedUPI(true);
+    toast.success('UPI ID copied!');
+    setTimeout(() => setCopiedUPI(false), 2000);
+  };
+
+  const handleUPIPayment = (app: 'bhim' | 'phonepe' | 'paytm') => {
+    if (!selectedTier) {
+      toast.error('Please select a tier first');
+      return;
+    }
+
+    const amount = selectedTier.inr;
+    const upiUrl = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${amount}&cu=INR`;
+    
+    window.location.href = upiUrl;
+    
+    toast.info(`Opening ${app.toUpperCase()}...`, { duration: 2000 });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,62 +88,63 @@ export function AddFundsModal({ open, onOpenChange }: AddFundsModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-strong max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">Add Funds via GPay/BHIM</DialogTitle>
-          <DialogDescription>
-            Complete your payment and submit the transaction ID
+      <DialogContent className="glass-strong max-w-lg max-h-[90vh] overflow-y-auto shadow-premium-xl">
+        <DialogHeader className="space-y-3">
+          <DialogTitle className="text-3xl">Add Funds via UPI</DialogTitle>
+          <DialogDescription className="text-base">
+            Scan QR code or pay via UPI app, then submit transaction ID
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-7 pt-2">
           {/* Selected Tier Info */}
           {selectedTier ? (
-            <div className="glass rounded-lg p-4 text-center space-y-2">
-              <p className="text-sm text-muted-foreground">Selected Amount</p>
-              <p className="text-2xl font-bold text-electric-blue">
+            <div className="glass rounded-xl p-5 text-center space-y-2 shadow-premium-sm">
+              <p className="text-sm text-muted-foreground font-medium">Selected Amount</p>
+              <p className="text-3xl font-bold text-electric-blue">
                 {formatINR(selectedTier.inr)}
               </p>
-              <p className="text-sm text-gold">
+              <p className="text-base text-gold font-semibold">
                 You'll receive {formatCoins(selectedTier.coins)} coins
               </p>
             </div>
           ) : (
-            <div className="glass rounded-lg p-4 text-center">
-              <p className="text-sm text-destructive">
+            <div className="glass rounded-xl p-5 text-center">
+              <p className="text-sm text-destructive font-medium">
                 Please select a tier from the Reward Calculator first
               </p>
             </div>
           )}
 
           {/* QR Code Section */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <QrCode className="w-4 h-4" />
-              <span>Scan QR Code or Use Payment Number</span>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-base font-semibold">
+              <QrCode className="w-5 h-5" />
+              <span>Scan QR Code</span>
             </div>
             
-            <div className="relative glass rounded-lg p-4 flex items-center justify-center">
+            <div className="relative glass rounded-xl p-5 flex items-center justify-center shadow-premium-sm">
               <img 
-                src="/assets/generated/qr-frame.dim_800x800.png" 
-                alt="QR Code" 
-                className="w-48 h-48 object-contain"
+                src="/assets/GooglePay_QR.png" 
+                alt="UPI QR Code" 
+                className="w-full max-w-[300px] h-auto object-contain rounded-lg"
               />
             </div>
 
-            <div className="glass rounded-lg p-4 space-y-2">
-              <p className="text-xs text-muted-foreground">Payment Number</p>
-              <div className="flex items-center gap-2">
-                <code className="flex-1 text-lg font-mono font-bold">
-                  {PAYMENT_NUMBER}
+            {/* UPI ID Section */}
+            <div className="glass rounded-xl p-5 space-y-3">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">UPI ID</p>
+              <div className="flex items-center gap-3">
+                <code className="flex-1 text-base font-mono font-bold break-all">
+                  {UPI_ID}
                 </code>
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={handleCopyNumber}
-                  className="shrink-0"
+                  onClick={handleCopyUPI}
+                  className="shrink-0 h-9 w-9 p-0"
                 >
-                  {copied ? (
+                  {copiedUPI ? (
                     <CheckCircle2 className="w-4 h-4 text-green-500" />
                   ) : (
                     <Copy className="w-4 h-4" />
@@ -137,25 +154,71 @@ export function AddFundsModal({ open, onOpenChange }: AddFundsModalProps) {
             </div>
           </div>
 
+          {/* UPI App Buttons */}
+          <div className="space-y-4">
+            <div className="text-base font-semibold">Or Pay via UPI App</div>
+            
+            {!selectedTier && (
+              <p className="text-xs text-destructive font-medium">
+                Select a tier above to enable UPI app payments
+              </p>
+            )}
+
+            <div className="grid grid-cols-3 gap-4">
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-3 h-auto py-5 hover:border-electric-blue/40 transition-all"
+                onClick={() => handleUPIPayment('bhim')}
+                disabled={!selectedTier}
+              >
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white font-bold text-base">
+                  B
+                </div>
+                <span className="text-sm font-semibold">BHIM</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-3 h-auto py-5 hover:border-electric-blue/40 transition-all"
+                onClick={() => handleUPIPayment('phonepe')}
+                disabled={!selectedTier}
+              >
+                <SiPhonepe className="w-10 h-10 text-purple-600" />
+                <span className="text-sm font-semibold">PhonePe</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-3 h-auto py-5 hover:border-electric-blue/40 transition-all"
+                onClick={() => handleUPIPayment('paytm')}
+                disabled={!selectedTier}
+              >
+                <SiPaytm className="w-10 h-10 text-blue-600" />
+                <span className="text-sm font-semibold">Paytm</span>
+              </Button>
+            </div>
+          </div>
+
           {/* Transaction ID Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="transactionId">Transaction ID</Label>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-3">
+              <Label htmlFor="transactionId" className="text-base font-semibold">Transaction ID</Label>
               <Input
                 id="transactionId"
                 placeholder="Enter your transaction ID"
                 value={transactionId}
                 onChange={(e) => setTransactionId(e.target.value)}
                 required
+                className="h-12 text-base premium-focus"
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 After completing payment, paste your transaction ID here
               </p>
             </div>
 
             <Button 
               type="submit"
-              className="w-full bg-electric-blue hover:bg-electric-blue/90"
+              className="w-full bg-electric-blue hover:bg-electric-blue/90 h-12 text-base font-semibold shadow-premium-md transition-all hover:shadow-premium-lg"
               size="lg"
               disabled={addFundsMutation.isPending || !selectedTier}
             >
@@ -167,4 +230,3 @@ export function AddFundsModal({ open, onOpenChange }: AddFundsModalProps) {
     </Dialog>
   );
 }
-

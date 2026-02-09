@@ -1,181 +1,97 @@
-import Text "mo:core/Text";
 import Map "mo:core/Map";
-import List "mo:core/List";
-import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
-import Iter "mo:core/Iter";
+import Principal "mo:core/Principal";
+import AccessControl "authorization/access-control";
+import MixinAuthorization "authorization/MixinAuthorization";
 
 actor {
-  type TransactionId = Text;
-  type PhoneNumber = Text;
-  type CoinBalance = Nat;
+  let accessControlState = AccessControl.initState();
+  include MixinAuthorization(accessControlState);
 
-  type UserProfile = {
-    phoneNumber : PhoneNumber;
-    coinBalance : CoinBalance;
-    bankAccount : ?BankAccount;
-    transactionHistory : [TransactionId];
+  public type UserProfile = {
+    name : Text;
   };
 
-  type BankAccount = {
-    accountHolderName : Text;
-    bankName : Text;
-    accountNumber : Text;
-    ifsc : Text;
-  };
+  let userProfiles = Map.empty<Principal, UserProfile>();
+  let canisters = Map.empty<Principal, Text>();
 
-  let users = Map.empty<Principal, UserProfile>();
+  // Map to store CTR registrations (principal -> CTR principal)
+  let ctrRegistrations = Map.empty<Principal, Principal>();
+  let ctrToPrincipal = Map.empty<Principal, Principal>();
 
-  public shared ({ caller }) func connectPhoneNumber(phoneNumber : Text) : async () {
-    if (users.containsKey(caller)) {
-      Runtime.trap("Phone number already connected");
+  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view profiles");
     };
+    userProfiles.get(caller);
+  };
 
-    let userProfile : UserProfile = {
-      phoneNumber;
-      coinBalance = 0;
-      bankAccount = null;
-      transactionHistory = [];
+  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
+    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own profile");
     };
-
-    users.add(caller, userProfile);
+    userProfiles.get(user);
   };
 
-  public shared ({ caller }) func addFunds(transactionId : TransactionId, tier : Nat) : async () {
-    switch (users.get(caller)) {
-      case (?profile) {
-        let transactionExists = profile.transactionHistory.find(func(tx) { tx == transactionId });
-        if (transactionExists != null) {
-          Runtime.trap("Transaction ID already used");
-        };
-
-        let updatedProfile : UserProfile = {
-          profile with
-          coinBalance = profile.coinBalance + tier;
-          transactionHistory = profile.transactionHistory.concat([transactionId]);
-        };
-
-        users.add(caller, updatedProfile);
-      };
-      case (null) { Runtime.trap("User does not exist") };
+  public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can save profiles");
     };
+    userProfiles.add(caller, profile);
   };
 
-  public shared ({ caller }) func addBankAccount(accountHolderName : Text, bankName : Text, accountNumber : Text, ifsc : Text) : async () {
-    switch (users.get(caller)) {
-      case (?profile) {
-        let bankDetails : BankAccount = {
-          accountHolderName;
-          bankName;
-          accountNumber;
-          ifsc;
-        };
-
-        let updatedProfile : UserProfile = {
-          profile with bankAccount = ?bankDetails;
-        };
-
-        users.add(caller, updatedProfile);
-      };
-      case (null) { Runtime.trap("User does not exist") };
+  // Register a CTR canister for a user.
+  public shared ({ caller }) func registerCTR(ctr : Principal) : async () {
+    if (ctrRegistrations.containsKey(caller)) {
+      Runtime.trap("Caller is already registered with a CTR");
     };
-  };
-
-  public query ({ caller }) func getCoinBalance() : async CoinBalance {
-    switch (users.get(caller)) {
-      case (?profile) { profile.coinBalance };
-      case (null) { 0 };
+    if (ctrToPrincipal.containsKey(ctr)) {
+      Runtime.trap("CTR is already registered with another principal");
     };
+    ctrRegistrations.add(caller, ctr);
+    ctrToPrincipal.add(ctr, caller);
   };
 
-  public query ({ caller }) func getBankAccount() : async ?BankAccount {
-    switch (users.get(caller)) {
-      case (?profile) { profile.bankAccount };
-      case (null) { null };
+  // Check if the caller has a registered CTR.
+  public query ({ caller }) func isCTRRegistered() : async Bool {
+    ctrRegistrations.containsKey(caller);
+  };
+
+  public shared ({ caller }) func registerCanister(id : Principal, name : Text) : async () {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can register canisters");
     };
+    canisters.add(id, name);
   };
 
-  public query ({ caller }) func getTransactionHistory() : async [TransactionId] {
-    switch (users.get(caller)) {
-      case (?profile) { profile.transactionHistory };
-      case (null) { [] };
+  public query ({ caller }) func getCanister(id : Principal) : async ?Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view canisters");
     };
+    canisters.get(id);
   };
 
-  public query ({ caller }) func isUserConnected() : async Bool {
-    users.containsKey(caller);
-  };
-
-  public query ({ caller }) func getRewardTiers() : async [(Nat, Nat)] {
-    let tiersList = List.fromArray<(Nat, Nat)>([(10, 15), (30, 55), (50, 95), (180, 390), (500, 1045), (1000, 2200)]);
-    tiersList.toArray();
-  };
-
-  public query ({ caller }) func getTransactionHistoryForUser(user : Principal) : async [TransactionId] {
-    switch (users.get(user)) {
-      case (?profile) { profile.transactionHistory };
-      case (null) { [] };
+  public query ({ caller }) func getAllCanisters() : async [(Principal, Text)] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view canisters");
     };
+    canisters.toArray();
   };
 
-  public shared ({ caller }) func updatePhoneNumber(newPhoneNumber : PhoneNumber) : async Bool {
-    switch (users.get(caller)) {
-      case (?profile) {
-        let updatedProfile : UserProfile = {
-          profile with phoneNumber = newPhoneNumber;
-        };
-        users.add(caller, updatedProfile);
-        true;
-      };
-      case (null) { false };
+  public shared ({ caller }) func deleteCanister(id : Principal) : async () {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can delete canisters");
     };
+    canisters.remove(id);
   };
 
-  public shared ({ caller }) func withdrawCoins() : async CoinBalance {
-    switch (users.get(caller)) {
-      case (?profile) {
-        if (profile.coinBalance == 0) { Runtime.trap("No coins to withdraw") };
-
-        users.add(
-          caller,
-          {
-            profile with coinBalance = 0;
-          },
-        );
-
-        profile.coinBalance;
-      };
-      case (null) { Runtime.trap("User does not exist") };
+  public shared ({ caller }) func updateCanisterName(id : Principal, newName : Text) : async () {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can update canisters");
     };
-  };
-
-  public shared ({ caller }) func transferCoins(toUser : Principal, amount : CoinBalance) : async () {
-    switch (users.get(caller)) {
-      case (?senderProfile) {
-        if (senderProfile.coinBalance < amount) {
-          Runtime.trap("Not enough coins to transfer");
-        };
-
-        switch (users.get(toUser)) {
-          case (?receiverProfile) {
-            let updatedSender : UserProfile = {
-              senderProfile with coinBalance = senderProfile.coinBalance - amount;
-            };
-            users.add(caller, updatedSender);
-
-            let updatedReceiver : UserProfile = {
-              receiverProfile with coinBalance = receiverProfile.coinBalance + amount;
-            };
-            users.add(toUser, updatedReceiver);
-          };
-          case (null) { Runtime.trap("Receiver does not exist") };
-        };
-      };
-      case (null) { Runtime.trap("Sender does not exist") };
+    switch (canisters.get(id)) {
+      case (?_) { canisters.add(id, newName) };
+      case (null) { Runtime.trap("Canister not found") };
     };
-  };
-
-  public query ({ caller }) func getAllUsers() : async [(Principal, UserProfile)] {
-    users.entries().toArray();
   };
 };

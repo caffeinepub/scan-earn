@@ -1,21 +1,20 @@
 import { create } from 'zustand';
 
 interface FlowState {
-  isPhoneConnected: boolean;
-  phoneNumber: string;
+  isCtrConnected: boolean;
+  ctrId: string;
   selectedTier: { inr: number; coins: number } | null;
-  setPhoneConnected: (connected: boolean, phone?: string) => void;
+  setCtrConnected: (connected: boolean, ctrId?: string) => void;
   setSelectedTier: (tier: { inr: number; coins: number } | null) => void;
   reset: () => void;
 }
 
 export const useFlowStore = create<FlowState>((set) => ({
-  isPhoneConnected: false,
-  phoneNumber: '',
+  isCtrConnected: false,
+  ctrId: '',
   selectedTier: null,
-  setPhoneConnected: (connected, phone = '') => 
-    set({ isPhoneConnected: connected, phoneNumber: phone }),
+  setCtrConnected: (connected, ctrId = '') => 
+    set({ isCtrConnected: connected, ctrId }),
   setSelectedTier: (tier) => set({ selectedTier: tier }),
-  reset: () => set({ isPhoneConnected: false, phoneNumber: '', selectedTier: null }),
+  reset: () => set({ isCtrConnected: false, ctrId: '', selectedTier: null }),
 }));
-

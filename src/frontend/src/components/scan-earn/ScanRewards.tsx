@@ -1,109 +1,86 @@
-import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Camera, CheckCircle2, Sparkles } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { MessageCircle, Sparkles } from 'lucide-react';
+import { useIsUserConnected } from '../../hooks/useQueries';
+import { getWhatsAppNFCLink } from '../../utils/whatsapp';
+import { toast } from 'sonner';
 
 export function ScanRewards() {
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanSuccess, setScanSuccess] = useState(false);
+  const { data: isConnected, isLoading } = useIsUserConnected();
 
   const handleScan = () => {
-    setIsScanning(true);
-    setScanSuccess(false);
+    // Check if user is connected
+    if (!isConnected) {
+      toast.error('Please connect your CTR first');
+      return;
+    }
 
-    // Simulate scan process
-    setTimeout(() => {
-      setIsScanning(false);
-      setScanSuccess(true);
-      
-      // Reset after showing success
-      setTimeout(() => {
-        setScanSuccess(false);
-      }, 3000);
-    }, 2000);
+    // Redirect to WhatsApp
+    const whatsappLink = getWhatsAppNFCLink();
+    window.open(whatsappLink, '_blank');
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h2 className="text-3xl font-bold flex items-center justify-center gap-2">
-          <Camera className="w-8 h-8 text-electric-blue" />
-          Scan & Earn
+    <div className="space-y-10">
+      <div className="text-center space-y-3">
+        <h2 className="text-4xl md:text-5xl font-bold flex items-center justify-center gap-3">
+          <MessageCircle className="w-10 h-10 text-electric-blue" />
+          Get NFC Code
         </h2>
-        <p className="text-muted-foreground">
-          Scan QR codes to earn bonus coins
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          Request your 4-digit NFC code via WhatsApp
         </p>
       </div>
 
-      <Card className="glass-strong max-w-md mx-auto">
-        <CardHeader className="text-center">
-          <CardTitle>Ready to Scan?</CardTitle>
-          <CardDescription>
-            Tap the button below to start scanning
+      <Card className="glass-strong max-w-md mx-auto shadow-premium-lg">
+        <CardHeader className="text-center space-y-3">
+          <CardTitle className="text-2xl">Request NFC Code</CardTitle>
+          <CardDescription className="text-base">
+            Get your unique 4-digit code to start earning
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Scan Area */}
-          <div 
-            className={cn(
-              'relative aspect-square glass rounded-2xl flex items-center justify-center transition-all',
-              isScanning && 'border-electric-blue border-2 animate-pulse',
-              scanSuccess && 'border-gold border-2 glow-gold'
-            )}
-          >
-            {scanSuccess ? (
-              <div className="text-center space-y-4 animate-in fade-in zoom-in duration-500">
-                <CheckCircle2 className="w-24 h-24 text-gold mx-auto" />
-                <div>
-                  <p className="text-2xl font-bold text-gold">Scan Success!</p>
-                  <p className="text-sm text-muted-foreground">Coins will be added soon</p>
-                </div>
+        <CardContent className="space-y-7">
+          {/* Info Area */}
+          <div className="glass rounded-2xl p-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-electric-blue/15 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <MessageCircle className="w-4 h-4 text-electric-blue" />
               </div>
-            ) : isScanning ? (
-              <div className="text-center space-y-4">
-                <div className="relative">
-                  <Camera className="w-24 h-24 text-electric-blue animate-pulse" />
-                  <div className="absolute inset-0 border-4 border-electric-blue rounded-lg animate-ping" />
-                </div>
-                <p className="text-lg font-semibold text-electric-blue">Scanning...</p>
+              <div className="space-y-2 text-sm">
+                <p className="font-medium">How it works:</p>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>• Click the button below to open WhatsApp</li>
+                  <li>• Send the pre-filled message</li>
+                  <li>• Receive your 4-digit NFC code</li>
+                  <li>• Code works only for CTTH</li>
+                  <li>• Only for CTR registered users</li>
+                </ul>
               </div>
-            ) : (
-              <div className="text-center space-y-4">
-                <Camera className="w-24 h-24 text-muted-foreground/50" />
-                <p className="text-muted-foreground">Camera preview area</p>
-              </div>
-            )}
+            </div>
           </div>
 
-          {/* Scan Button */}
+          {/* Request Button */}
           <Button
             onClick={handleScan}
-            disabled={isScanning || scanSuccess}
-            className="w-full bg-electric-blue hover:bg-electric-blue/90"
+            disabled={isLoading}
+            className="w-full bg-electric-blue hover:bg-electric-blue/90 h-12 text-base font-semibold shadow-premium-md transition-all hover:shadow-premium-lg"
             size="lg"
           >
-            {isScanning ? (
-              'Scanning...'
-            ) : scanSuccess ? (
-              <>
-                <CheckCircle2 className="mr-2 h-5 w-5" />
-                Success!
-              </>
-            ) : (
-              <>
-                <Sparkles className="mr-2 h-5 w-5" />
-                Start Scanning
-              </>
-            )}
+            <Sparkles className="mr-2 h-5 w-5" />
+            Request NFC Code via WhatsApp
           </Button>
 
+          {!isConnected && !isLoading && (
+            <p className="text-xs text-center text-destructive">
+              Please connect your CTR ID first to request an NFC code
+            </p>
+          )}
+
           <p className="text-xs text-center text-muted-foreground">
-            Demo mode: Simulated scan for demonstration purposes
+            You will be redirected to WhatsApp to complete your request
           </p>
         </CardContent>
       </Card>
     </div>
   );
 }
-

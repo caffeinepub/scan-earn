@@ -89,254 +89,265 @@ export class ExternalBlob {
         return this;
     }
 }
-export type PhoneNumber = string;
-export interface BankAccount {
-    ifsc: string;
-    accountHolderName: string;
-    bankName: string;
-    accountNumber: string;
-}
-export type TransactionId = string;
-export type CoinBalance = bigint;
 export interface UserProfile {
-    bankAccount?: BankAccount;
-    coinBalance: CoinBalance;
-    phoneNumber: PhoneNumber;
-    transactionHistory: Array<TransactionId>;
+    name: string;
+}
+export enum UserRole {
+    admin = "admin",
+    user = "user",
+    guest = "guest"
 }
 export interface backendInterface {
-    addBankAccount(accountHolderName: string, bankName: string, accountNumber: string, ifsc: string): Promise<void>;
-    addFunds(transactionId: TransactionId, tier: bigint): Promise<void>;
-    connectPhoneNumber(phoneNumber: string): Promise<void>;
-    getAllUsers(): Promise<Array<[Principal, UserProfile]>>;
-    getBankAccount(): Promise<BankAccount | null>;
-    getCoinBalance(): Promise<CoinBalance>;
-    getRewardTiers(): Promise<Array<[bigint, bigint]>>;
-    getTransactionHistory(): Promise<Array<TransactionId>>;
-    getTransactionHistoryForUser(user: Principal): Promise<Array<TransactionId>>;
-    isUserConnected(): Promise<boolean>;
-    transferCoins(toUser: Principal, amount: CoinBalance): Promise<void>;
-    updatePhoneNumber(newPhoneNumber: PhoneNumber): Promise<boolean>;
-    withdrawCoins(): Promise<CoinBalance>;
+    _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    deleteCanister(id: Principal): Promise<void>;
+    getAllCanisters(): Promise<Array<[Principal, string]>>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
+    getCallerUserRole(): Promise<UserRole>;
+    getCanister(id: Principal): Promise<string | null>;
+    getUserProfile(user: Principal): Promise<UserProfile | null>;
+    isCTRRegistered(): Promise<boolean>;
+    isCallerAdmin(): Promise<boolean>;
+    registerCTR(ctr: Principal): Promise<void>;
+    registerCanister(id: Principal, name: string): Promise<void>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    updateCanisterName(id: Principal, newName: string): Promise<void>;
 }
-import type { BankAccount as _BankAccount, CoinBalance as _CoinBalance, PhoneNumber as _PhoneNumber, TransactionId as _TransactionId, UserProfile as _UserProfile } from "./declarations/backend.did.d.ts";
+import type { UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
-    async addBankAccount(arg0: string, arg1: string, arg2: string, arg3: string): Promise<void> {
+    async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.addBankAccount(arg0, arg1, arg2, arg3);
+                const result = await this.actor._initializeAccessControlWithSecret(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addBankAccount(arg0, arg1, arg2, arg3);
+            const result = await this.actor._initializeAccessControlWithSecret(arg0);
             return result;
         }
     }
-    async addFunds(arg0: TransactionId, arg1: bigint): Promise<void> {
+    async assignCallerUserRole(arg0: Principal, arg1: UserRole): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.addFunds(arg0, arg1);
+                const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg1));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addFunds(arg0, arg1);
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg1));
             return result;
         }
     }
-    async connectPhoneNumber(arg0: string): Promise<void> {
+    async deleteCanister(arg0: Principal): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.connectPhoneNumber(arg0);
+                const result = await this.actor.deleteCanister(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.connectPhoneNumber(arg0);
+            const result = await this.actor.deleteCanister(arg0);
             return result;
         }
     }
-    async getAllUsers(): Promise<Array<[Principal, UserProfile]>> {
+    async getAllCanisters(): Promise<Array<[Principal, string]>> {
         if (this.processError) {
             try {
-                const result = await this.actor.getAllUsers();
-                return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getAllUsers();
-            return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getBankAccount(): Promise<BankAccount | null> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getBankAccount();
-                return from_candid_opt_n5(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getBankAccount();
-            return from_candid_opt_n5(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getCoinBalance(): Promise<CoinBalance> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getCoinBalance();
+                const result = await this.actor.getAllCanisters();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getCoinBalance();
+            const result = await this.actor.getAllCanisters();
             return result;
         }
     }
-    async getRewardTiers(): Promise<Array<[bigint, bigint]>> {
+    async getCallerUserProfile(): Promise<UserProfile | null> {
         if (this.processError) {
             try {
-                const result = await this.actor.getRewardTiers();
+                const result = await this.actor.getCallerUserProfile();
+                return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCallerUserProfile();
+            return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getCallerUserRole(): Promise<UserRole> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCallerUserRole();
+                return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCallerUserRole();
+            return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getCanister(arg0: Principal): Promise<string | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCanister(arg0);
+                return from_candid_opt_n6(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCanister(arg0);
+            return from_candid_opt_n6(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUserProfile(arg0);
+                return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUserProfile(arg0);
+            return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async isCTRRegistered(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.isCTRRegistered();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getRewardTiers();
+            const result = await this.actor.isCTRRegistered();
             return result;
         }
     }
-    async getTransactionHistory(): Promise<Array<TransactionId>> {
+    async isCallerAdmin(): Promise<boolean> {
         if (this.processError) {
             try {
-                const result = await this.actor.getTransactionHistory();
+                const result = await this.actor.isCallerAdmin();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getTransactionHistory();
+            const result = await this.actor.isCallerAdmin();
             return result;
         }
     }
-    async getTransactionHistoryForUser(arg0: Principal): Promise<Array<TransactionId>> {
+    async registerCTR(arg0: Principal): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.getTransactionHistoryForUser(arg0);
+                const result = await this.actor.registerCTR(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getTransactionHistoryForUser(arg0);
+            const result = await this.actor.registerCTR(arg0);
             return result;
         }
     }
-    async isUserConnected(): Promise<boolean> {
+    async registerCanister(arg0: Principal, arg1: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.isUserConnected();
+                const result = await this.actor.registerCanister(arg0, arg1);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.isUserConnected();
+            const result = await this.actor.registerCanister(arg0, arg1);
             return result;
         }
     }
-    async transferCoins(arg0: Principal, arg1: CoinBalance): Promise<void> {
+    async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.transferCoins(arg0, arg1);
+                const result = await this.actor.saveCallerUserProfile(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.transferCoins(arg0, arg1);
+            const result = await this.actor.saveCallerUserProfile(arg0);
             return result;
         }
     }
-    async updatePhoneNumber(arg0: PhoneNumber): Promise<boolean> {
+    async updateCanisterName(arg0: Principal, arg1: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.updatePhoneNumber(arg0);
+                const result = await this.actor.updateCanisterName(arg0, arg1);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updatePhoneNumber(arg0);
-            return result;
-        }
-    }
-    async withdrawCoins(): Promise<CoinBalance> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.withdrawCoins();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.withdrawCoins();
+            const result = await this.actor.updateCanisterName(arg0, arg1);
             return result;
         }
     }
 }
-function from_candid_UserProfile_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserProfile): UserProfile {
-    return from_candid_record_n4(_uploadFile, _downloadFile, value);
+function from_candid_UserRole_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
+    return from_candid_variant_n5(_uploadFile, _downloadFile, value);
 }
-function from_candid_opt_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_BankAccount]): BankAccount | null {
+function from_candid_opt_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_record_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    bankAccount: [] | [_BankAccount];
-    coinBalance: _CoinBalance;
-    phoneNumber: _PhoneNumber;
-    transactionHistory: Array<_TransactionId>;
-}): {
-    bankAccount?: BankAccount;
-    coinBalance: CoinBalance;
-    phoneNumber: PhoneNumber;
-    transactionHistory: Array<TransactionId>;
+function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    admin: null;
+} | {
+    user: null;
+} | {
+    guest: null;
+}): UserRole {
+    return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
+}
+function to_candid_UserRole_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
+    return to_candid_variant_n2(_uploadFile, _downloadFile, value);
+}
+function to_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): {
+    admin: null;
+} | {
+    user: null;
+} | {
+    guest: null;
 } {
-    return {
-        bankAccount: record_opt_to_undefined(from_candid_opt_n5(_uploadFile, _downloadFile, value.bankAccount)),
-        coinBalance: value.coinBalance,
-        phoneNumber: value.phoneNumber,
-        transactionHistory: value.transactionHistory
-    };
-}
-function from_candid_tuple_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [Principal, _UserProfile]): [Principal, UserProfile] {
-    return [
-        value[0],
-        from_candid_UserProfile_n3(_uploadFile, _downloadFile, value[1])
-    ];
-}
-function from_candid_vec_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<[Principal, _UserProfile]>): Array<[Principal, UserProfile]> {
-    return value.map((x)=>from_candid_tuple_n2(_uploadFile, _downloadFile, x));
+    return value == UserRole.admin ? {
+        admin: null
+    } : value == UserRole.user ? {
+        user: null
+    } : value == UserRole.guest ? {
+        guest: null
+    } : value;
 }
 export interface CreateActorOptions {
     agent?: Agent;

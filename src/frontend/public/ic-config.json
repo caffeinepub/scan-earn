@@ -1,0 +1,6 @@
+{
+  "_comment": "This file is used to configure the frontend for deployed IC environments. Update backendCanisterId after deploying to mainnet or testnet.",
+  "backendCanisterId": "rrkah-fqaaa-aaaaa-aaaaq-cai",
+  "host": "https://ic0.app",
+  "_instructions": "After running 'dfx deploy --network ic', update backendCanisterId with the deployed backend canister ID shown in the deployment output."
+}

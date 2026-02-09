@@ -7,33 +7,26 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export type PhoneNumber = string;
-export interface BankAccount {
-    ifsc: string;
-    accountHolderName: string;
-    bankName: string;
-    accountNumber: string;
-}
-export type TransactionId = string;
-export type CoinBalance = bigint;
 export interface UserProfile {
-    bankAccount?: BankAccount;
-    coinBalance: CoinBalance;
-    phoneNumber: PhoneNumber;
-    transactionHistory: Array<TransactionId>;
+    name: string;
+}
+export enum UserRole {
+    admin = "admin",
+    user = "user",
+    guest = "guest"
 }
 export interface backendInterface {
-    addBankAccount(accountHolderName: string, bankName: string, accountNumber: string, ifsc: string): Promise<void>;
-    addFunds(transactionId: TransactionId, tier: bigint): Promise<void>;
-    connectPhoneNumber(phoneNumber: string): Promise<void>;
-    getAllUsers(): Promise<Array<[Principal, UserProfile]>>;
-    getBankAccount(): Promise<BankAccount | null>;
-    getCoinBalance(): Promise<CoinBalance>;
-    getRewardTiers(): Promise<Array<[bigint, bigint]>>;
-    getTransactionHistory(): Promise<Array<TransactionId>>;
-    getTransactionHistoryForUser(user: Principal): Promise<Array<TransactionId>>;
-    isUserConnected(): Promise<boolean>;
-    transferCoins(toUser: Principal, amount: CoinBalance): Promise<void>;
-    updatePhoneNumber(newPhoneNumber: PhoneNumber): Promise<boolean>;
-    withdrawCoins(): Promise<CoinBalance>;
+    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    deleteCanister(id: Principal): Promise<void>;
+    getAllCanisters(): Promise<Array<[Principal, string]>>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
+    getCallerUserRole(): Promise<UserRole>;
+    getCanister(id: Principal): Promise<string | null>;
+    getUserProfile(user: Principal): Promise<UserProfile | null>;
+    isCTRRegistered(): Promise<boolean>;
+    isCallerAdmin(): Promise<boolean>;
+    registerCTR(ctr: Principal): Promise<void>;
+    registerCanister(id: Principal, name: string): Promise<void>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    updateCanisterName(id: Principal, newName: string): Promise<void>;
 }

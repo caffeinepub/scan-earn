@@ -1,229 +1,134 @@
 {
   "kind": "build_request",
-  "title": "Single-page “Scan & Earn” fintech rewards landing app with wallet, add-funds QR, and scan-to-earn demo",
-  "priority": "normal",
+  "title": "Enforce 7-digit CTR + access code, and redirect Scan to WhatsApp with prefilled NFC request",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Create a single-page, mobile-first marketing + product experience for a “Scan & Earn” rewards platform with a modern fintech dark-mode, glassmorphism UI using Electric Blue as the primary accent and Gold for coin-related highlights.",
+      "text": "Update the CTR connect flow UI to require (a) a CTR value that is exactly 7 digits and (b) an access code that must equal \"IQL0918\" (case-insensitive acceptance is OK, but store/display it uppercased). The user must not be able to proceed/\"Connect\" unless both validations pass, and error messages must be shown in English.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-4"
         ],
         "quotes": [
-          "Theme: Modern Fintech (Dark mode, sleek glassmorphism effects).\nPrimary Colors: Electric Blue and Gold (for coins)."
+          "CTR MUST ME 7 DIGITS USER NEED TO ENTER ONLY IQL0918."
         ]
       },
       "acceptanceCriteria": [
-        "App renders as a single page with clear section hierarchy and smooth scrolling between sections",
-        "Dark-mode glassmorphism styling is applied consistently (blurred panels, subtle borders, soft shadows)",
-        "Electric Blue is used for primary CTAs/accents and Gold is used for coin counters/coin visuals",
-        "Layout is responsive and optimized for mobile (≤430px) and scales cleanly to desktop"
+        "CTR Connect screen copy no longer references a 13-character CTR format or an \"IN\" suffix.",
+        "CTR input only accepts digits and is limited to 7 characters.",
+        "Access code input is present and required; it validates against exactly \"IQL0918\".",
+        "The Connect button is disabled until CTR is 7 digits and access code matches.",
+        "Invalid inputs show clear English error messages (and existing toast behavior remains consistent)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Implement the Hero section containing: (1) headline text exactly “Turn Payments into Profits”, (2) a primary CTA button labeled “Scan Now”, and (3) a live “Coin Counter” demo that animates (count-up) when the user earns coins in the app flow.",
+      "text": "Change CTR validation logic to match the new requirement: CTR must be exactly 7 digits. Remove the previous 13-character + \"IN\" format validation from the validation helper(s) used by the CTR connect flow.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-4"
         ],
         "quotes": [
-          "Hero Section: A bold headline \"Turn Payments into Profits\" with a \"Scan Now\" button and a live \"Coin Counter\" demo.",
-          "Focus on describing the animations (e.g., \"The coin counter should count up rapidly when a payment is confirmed\")."
+          "CTR MUST ME 7 DIGITS"
         ]
       },
       "acceptanceCriteria": [
-        "Hero headline and CTA copy match exactly",
-        "Clicking “Scan Now” moves the user into the scan flow section (scroll and/or focus)",
-        "Coin Counter is visible in the hero and updates whenever the user’s coin balance changes",
-        "On coin balance increases, the counter performs a fast count-up animation from previous balance to new balance"
+        "Calling the CTR validation with anything other than 7 digits returns invalid with an English error message.",
+        "\"1234567\" is treated as valid CTR.",
+        "Any alphabetic characters, spaces, or length != 7 are treated as invalid CTR."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Add a “Connect phone number” step as the first step in the user flow, allowing a user to enter an Indian phone number and proceed (no SMS verification required).",
-      "target": "both",
+      "text": "Implement backend support for CTR registration so that the system can enforce \"Only per CTR Registered user\": add backend methods to (1) connect/register a CTR for the calling principal and (2) query whether the caller is already connected/registered. Enforce that a principal can only register one CTR, and that the same CTR cannot be registered by multiple principals.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-4"
         ],
         "quotes": [
-          "User lands on the page → Connects phone number → Selects a payment tier → Redirects to GPay/BHIM → Returns to see updated Coin Balance."
+          "Only per CTR Registered user"
         ]
       },
       "acceptanceCriteria": [
-        "UI provides a phone input labeled in English and accepts Indian-format phone numbers (validation is basic: digits + length)",
-        "User cannot proceed to payment tier selection until a phone number is entered and accepted",
-        "Backend can associate user state (coin balance, bank details, pending payments) to the connected phone number"
+        "Backend exposes a method to register/connect CTR for the caller and persists the association.",
+        "Backend exposes a method to query whether the caller is connected/registered (boolean).",
+        "Attempting to register a second CTR for the same principal fails with a clear error.",
+        "Attempting to register a CTR that is already registered to another principal fails with a clear error.",
+        "State is preserved across canister upgrades (add a migration if required by the chosen state representation)."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Build the “Reward Calculator” as an interactive grid of selectable payment tiers using the exact INR→coin mapping: ₹10=15, ₹30=55, ₹50=95, ₹180=390, ₹500=1045, ₹1k=2200. Selecting a tier should set it as the current intended add-funds amount for the flow.",
+      "text": "Wire the existing React Query hooks for CTR connection to the backend implementation so the CTR connect UI can actually connect and the app can correctly detect connected state after refresh/reload.",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-4"
         ],
         "quotes": [
-          "The Reward Calculator: Create an interactive grid showing the investment tiers.\nData: ₹10=15 coins, ₹30=55, ₹50=95, ₹180=390, ₹500=1045, ₹1k=2200."
+          "Only per CTR Registered user"
         ]
       },
       "acceptanceCriteria": [
-        "Reward tiers render as a grid of selectable cards/buttons",
-        "Each tier displays INR amount using the ₹ symbol and the corresponding coin amount",
-        "Only one tier can be selected at a time and the selected state is visually obvious",
-        "The selected tier is used by the Add Funds / payment flow as the chosen amount"
+        "The \"Connect\" action no longer throws \"Backend method connectCtrId not implemented yet\".",
+        "After a successful connect, the app treats the user as connected (the scan section gating works as designed).",
+        "On page reload, connected users are still recognized as connected via the backend query hook."
       ]
     },
     {
       "id": "REQ-5",
-      "text": "Create a “My Wallet” section that includes: (1) an “Add Bank Account” form and (2) an “Add Funds” button. The bank form should capture standard fields (account holder name, bank name, account number, IFSC) and persist them for the connected phone number.",
-      "target": "both",
+      "text": "Replace the current simulated scan behavior with a \"Scan\" action that redirects the user to WhatsApp for Indian number +91 9541525891 with a prefilled message that includes exactly: (1) \"Get NFC code of 4 digits\" and (2) \"Code works only: CTTH\" and (3) \"Only per CTR Registered user\". Use an https://wa.me/ link (or equivalent WhatsApp deep link) and URL-encode the message.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-4"
         ],
         "quotes": [
-          "Wallet Integration: A \"My Wallet\" section with \"Add Bank Account\" (form) and \"Add Funds\" (button)."
+          "IF user click on scan option redirect to whatsapp indian number 9541525891 add Get NFC code of 4 digits on message to send me Code works only: CTTH Only per CTR Registered user"
         ]
       },
       "acceptanceCriteria": [
-        "My Wallet section is present and visually consistent with the app theme",
-        "Add Bank Account form includes the fields: Account Holder Name, Bank Name, Account Number, IFSC",
-        "Submitting the form saves the data and shows a success state in the UI",
-        "Reloading the page and reconnecting the same phone number restores the saved bank account details"
+        "Clicking the scan action opens/redirects to WhatsApp chat for +91 9541525891.",
+        "The prefilled WhatsApp message contains the exact required English phrases: \"Get NFC code of 4 digits\", \"Code works only: CTTH\", and \"Only per CTR Registered user\".",
+        "The message text is correctly URL-encoded (no broken link; spaces/newlines handled).",
+        "The prior simulated scanning timer/success animation is removed or no longer triggers on scan click."
       ]
     },
     {
       "id": "REQ-6",
-      "text": "Implement the GPay/BHIM add-funds gateway popup/modal. When “Add Funds” is clicked, show a popup containing: (1) a QR code, (2) payment number exactly “9541525891”, and (3) a Transaction ID input field with a submit/verify action that drives the coin crediting flow for the selected tier.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "GPay/BHIM Gateway: When \"Add Funds\" is clicked, show a popup with a QR code and the payment number 9541525891. Include a field for the user to paste their Transaction ID for verification."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Clicking “Add Funds” opens a modal/popup without leaving the page",
-        "Modal displays a QR code (visually scannable) and the payment number “9541525891”",
-        "Modal includes a Transaction ID input and a clear submit/verify control",
-        "Submitting a Transaction ID records it in backend state tied to the connected phone number and selected tier",
-        "On successful submission, the app transitions to a “payment confirmed” state (simulated) that credits coins and triggers the coin counter count-up animation"
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Add a “Scan Rewards” experience with a simulated camera interface or a “Scan” button that triggers a “Success” animation when a scan is completed and can optionally award coins (or mark scan completion) as part of the demo flow.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Scan Rewards: A simulated camera interface or button that triggers a \"Success\" animation when a scan is completed."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Scan Rewards section provides an obvious scan interaction (camera-like frame or a Scan button)",
-        "Triggering a scan shows a success animation/state change",
-        "Scan completion is recorded in backend state for the connected phone number (e.g., lastScanAt and/or scanCount)",
-        "If scan awards coins, the coin balance updates and the hero coin counter animates accordingly"
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "text": "Implement the full user flow on a single page: Connect phone number → select payment tier → open GPay/BHIM modal (simulated redirect) → submit Transaction ID → return to the main view with updated coin balance. The coin balance must update in real time across all UI locations where it is shown.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "User lands on the page → Connects phone number → Selects a payment tier → Redirects to GPay/BHIM → Returns to see updated Coin Balance.\nEnsure ... the coin balance updates in real-time."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Flow is guided with clear CTAs and disabled states until prerequisites are met (phone connected, tier selected)",
-        "After Transaction ID submission, the selected tier’s coin amount is added to the user’s coin balance",
-        "Updated coin balance appears consistently in the hero coin counter and wallet balance display without a full page reload",
-        "All user-facing text is in English and amounts are displayed in INR using ₹"
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "text": "Add backend Motoko data storage and APIs required for: per-phone user profile, coin balance, bank account details, selected tier (optional), and recording submitted Transaction IDs to prevent accidental double-crediting of the same Transaction ID for a given phone number.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Ensure ... components are modular and the coin balance updates in real-time.",
-          "Include a field for the user to paste their Transaction ID for verification."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend exposes methods to: get/create user by phone, get balance, set bank details, submit transaction ID with tier amount, and record scans",
-        "Backend prevents crediting the same Transaction ID more than once for the same connected phone number",
-        "Backend returns updated coin balance after credit operations so the frontend can update immediately"
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "text": "Structure the frontend into modular components (Hero/CoinCounter, PhoneConnect, RewardCalculator, Wallet, AddFundsModal, ScanRewards, shared layout) and use React Query for backend reads/mutations so UI state stays consistent and updates immediately after actions.",
+      "text": "Ensure scan/redirect is only available to CTR-registered users: if a user is not connected/registered, prevent the WhatsApp redirect and show an English error prompt instructing them to connect/register their CTR first.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-4"
         ],
         "quotes": [
-          "Build this using React with Tailwind CSS for a responsive, mobile-first design. Ensure all components are modular and the coin balance updates in real-time."
+          "Only per CTR Registered user"
         ]
       },
       "acceptanceCriteria": [
-        "Frontend code is organized into reusable components rather than one large file",
-        "Backend interactions (load user/balance, save bank, submit transaction, record scan) are implemented via React Query queries/mutations",
-        "After each successful mutation, affected queries are invalidated/refetched so displayed balances/state update promptly"
+        "When not connected, clicking the scan action does not open WhatsApp.",
+        "When not connected, the app shows an English toast/message like \"Please connect your CTR first\" (or similar).",
+        "When connected, the scan action successfully redirects to WhatsApp."
       ]
     }
   ],
   "constraints": [
-    "Use React + TypeScript on the frontend with Tailwind CSS and React Query",
-    "Backend must be Motoko in a single-actor architecture (all logic in backend/main.mo); only add migration.mo if an upgrade requires it",
-    "Do not modify any files under frontend/immutablePaths; compose UI using existing components instead",
-    "Use English for all user-facing text",
-    "Display currency in INR using the ₹ symbol",
-    "Do not add third-party authentication providers; phone connect is a local app step (no SMS requirement implied)"
+    "Backend must remain single-actor (all Motoko logic in backend/main.mo).",
+    "Do not edit files under frontend/src/components/ui or any frontend immutablePaths listed in SYSTEM_CONTEXT; compose them instead.",
+    "Use English for any user-facing text."
   ],
   "nonGoals": [
-    "Implementing real payment processing or actual GPay/BHIM verification beyond a simulated confirmation flow",
-    "SMS/OTP verification for phone numbers",
-    "Multi-page routing experience (must remain a single-page app)",
-    "Push notifications, emails, or real-time sockets"
+    "Implementing WhatsApp Business API integration, message delivery tracking, or inbound code verification via WhatsApp.",
+    "Adding real camera/QR scanning functionality (the scan action is a redirect).",
+    "Adding third-party authentication methods (only Internet Identity is allowed)."
   ],
   "imageRequirements": {
-    "required": [
-      "Gold coin icon/illustration in a sleek fintech style (coin-icon.dim_256x256.png)",
-      "Dark glassmorphism hero background with subtle electric-blue gradients and abstract shapes (hero-bg.dim_1920x1080.png)",
-      "QR code placeholder graphic with a clean frame and dark-mode styling (qr-frame.dim_800x800.png)"
-    ],
+    "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

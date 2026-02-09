@@ -10,38 +10,25 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface BankAccount {
-  'ifsc' : string,
-  'accountHolderName' : string,
-  'bankName' : string,
-  'accountNumber' : string,
-}
-export type CoinBalance = bigint;
-export type PhoneNumber = string;
-export type TransactionId = string;
-export interface UserProfile {
-  'bankAccount' : [] | [BankAccount],
-  'coinBalance' : CoinBalance,
-  'phoneNumber' : PhoneNumber,
-  'transactionHistory' : Array<TransactionId>,
-}
+export interface UserProfile { 'name' : string }
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
 export interface _SERVICE {
-  'addBankAccount' : ActorMethod<[string, string, string, string], undefined>,
-  'addFunds' : ActorMethod<[TransactionId, bigint], undefined>,
-  'connectPhoneNumber' : ActorMethod<[string], undefined>,
-  'getAllUsers' : ActorMethod<[], Array<[Principal, UserProfile]>>,
-  'getBankAccount' : ActorMethod<[], [] | [BankAccount]>,
-  'getCoinBalance' : ActorMethod<[], CoinBalance>,
-  'getRewardTiers' : ActorMethod<[], Array<[bigint, bigint]>>,
-  'getTransactionHistory' : ActorMethod<[], Array<TransactionId>>,
-  'getTransactionHistoryForUser' : ActorMethod<
-    [Principal],
-    Array<TransactionId>
-  >,
-  'isUserConnected' : ActorMethod<[], boolean>,
-  'transferCoins' : ActorMethod<[Principal, CoinBalance], undefined>,
-  'updatePhoneNumber' : ActorMethod<[PhoneNumber], boolean>,
-  'withdrawCoins' : ActorMethod<[], CoinBalance>,
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'deleteCanister' : ActorMethod<[Principal], undefined>,
+  'getAllCanisters' : ActorMethod<[], Array<[Principal, string]>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getCanister' : ActorMethod<[Principal], [] | [string]>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'isCTRRegistered' : ActorMethod<[], boolean>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'registerCTR' : ActorMethod<[Principal], undefined>,
+  'registerCanister' : ActorMethod<[Principal, string], undefined>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'updateCanisterName' : ActorMethod<[Principal, string], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

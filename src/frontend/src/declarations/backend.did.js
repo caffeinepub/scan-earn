@@ -8,99 +8,71 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const TransactionId = IDL.Text;
-export const BankAccount = IDL.Record({
-  'ifsc' : IDL.Text,
-  'accountHolderName' : IDL.Text,
-  'bankName' : IDL.Text,
-  'accountNumber' : IDL.Text,
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
 });
-export const CoinBalance = IDL.Nat;
-export const PhoneNumber = IDL.Text;
-export const UserProfile = IDL.Record({
-  'bankAccount' : IDL.Opt(BankAccount),
-  'coinBalance' : CoinBalance,
-  'phoneNumber' : PhoneNumber,
-  'transactionHistory' : IDL.Vec(TransactionId),
-});
+export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
-  'addBankAccount' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text], [], []),
-  'addFunds' : IDL.Func([TransactionId, IDL.Nat], [], []),
-  'connectPhoneNumber' : IDL.Func([IDL.Text], [], []),
-  'getAllUsers' : IDL.Func(
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'deleteCanister' : IDL.Func([IDL.Principal], [], []),
+  'getAllCanisters' : IDL.Func(
       [],
-      [IDL.Vec(IDL.Tuple(IDL.Principal, UserProfile))],
+      [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Text))],
       ['query'],
     ),
-  'getBankAccount' : IDL.Func([], [IDL.Opt(BankAccount)], ['query']),
-  'getCoinBalance' : IDL.Func([], [CoinBalance], ['query']),
-  'getRewardTiers' : IDL.Func(
-      [],
-      [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat))],
-      ['query'],
-    ),
-  'getTransactionHistory' : IDL.Func([], [IDL.Vec(TransactionId)], ['query']),
-  'getTransactionHistoryForUser' : IDL.Func(
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getCanister' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
+  'getUserProfile' : IDL.Func(
       [IDL.Principal],
-      [IDL.Vec(TransactionId)],
+      [IDL.Opt(UserProfile)],
       ['query'],
     ),
-  'isUserConnected' : IDL.Func([], [IDL.Bool], ['query']),
-  'transferCoins' : IDL.Func([IDL.Principal, CoinBalance], [], []),
-  'updatePhoneNumber' : IDL.Func([PhoneNumber], [IDL.Bool], []),
-  'withdrawCoins' : IDL.Func([], [CoinBalance], []),
+  'isCTRRegistered' : IDL.Func([], [IDL.Bool], ['query']),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'registerCTR' : IDL.Func([IDL.Principal], [], []),
+  'registerCanister' : IDL.Func([IDL.Principal, IDL.Text], [], []),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'updateCanisterName' : IDL.Func([IDL.Principal, IDL.Text], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  const TransactionId = IDL.Text;
-  const BankAccount = IDL.Record({
-    'ifsc' : IDL.Text,
-    'accountHolderName' : IDL.Text,
-    'bankName' : IDL.Text,
-    'accountNumber' : IDL.Text,
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
   });
-  const CoinBalance = IDL.Nat;
-  const PhoneNumber = IDL.Text;
-  const UserProfile = IDL.Record({
-    'bankAccount' : IDL.Opt(BankAccount),
-    'coinBalance' : CoinBalance,
-    'phoneNumber' : PhoneNumber,
-    'transactionHistory' : IDL.Vec(TransactionId),
-  });
+  const UserProfile = IDL.Record({ 'name' : IDL.Text });
   
   return IDL.Service({
-    'addBankAccount' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'deleteCanister' : IDL.Func([IDL.Principal], [], []),
+    'getAllCanisters' : IDL.Func(
         [],
-        [],
-      ),
-    'addFunds' : IDL.Func([TransactionId, IDL.Nat], [], []),
-    'connectPhoneNumber' : IDL.Func([IDL.Text], [], []),
-    'getAllUsers' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Tuple(IDL.Principal, UserProfile))],
+        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Text))],
         ['query'],
       ),
-    'getBankAccount' : IDL.Func([], [IDL.Opt(BankAccount)], ['query']),
-    'getCoinBalance' : IDL.Func([], [CoinBalance], ['query']),
-    'getRewardTiers' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat))],
-        ['query'],
-      ),
-    'getTransactionHistory' : IDL.Func([], [IDL.Vec(TransactionId)], ['query']),
-    'getTransactionHistoryForUser' : IDL.Func(
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getCanister' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
+    'getUserProfile' : IDL.Func(
         [IDL.Principal],
-        [IDL.Vec(TransactionId)],
+        [IDL.Opt(UserProfile)],
         ['query'],
       ),
-    'isUserConnected' : IDL.Func([], [IDL.Bool], ['query']),
-    'transferCoins' : IDL.Func([IDL.Principal, CoinBalance], [], []),
-    'updatePhoneNumber' : IDL.Func([PhoneNumber], [IDL.Bool], []),
-    'withdrawCoins' : IDL.Func([], [CoinBalance], []),
+    'isCTRRegistered' : IDL.Func([], [IDL.Bool], ['query']),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'registerCTR' : IDL.Func([IDL.Principal], [], []),
+    'registerCanister' : IDL.Func([IDL.Principal, IDL.Text], [], []),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'updateCanisterName' : IDL.Func([IDL.Principal, IDL.Text], [], []),
   });
 };
 
