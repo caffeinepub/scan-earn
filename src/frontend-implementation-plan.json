@@ -1,0 +1,309 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Scan & Earn single-page fintech rewards landing (frontend-only)",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Create a single-page, mobile-first dark-mode glassmorphism UI with Electric Blue accents and Gold highlights, with smooth section scrolling.",
+      "acceptanceCriteria": [
+        "App renders as a single page with clear section hierarchy and smooth scrolling between sections",
+        "Dark-mode glassmorphism styling is applied consistently (blurred panels, subtle borders, soft shadows)",
+        "Electric Blue is used for primary CTAs/accents and Gold is used for coin counters/coin visuals",
+        "Layout is responsive and optimized for mobile (≤430px) and scales cleanly to desktop"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "create",
+          "description": "Add Tailwind base + global theme tokens (dark mode) to support glassmorphism (blurred panels, subtle borders, soft shadows) and define Electric Blue + Gold CSS variables/utilities for consistent accents across sections."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend theme with fintech accent tokens (Electric Blue primary, Gold highlight) and reusable glassmorphism utilities/shadows to ensure consistent styling across the single-page sections."
+        },
+        {
+          "path": "frontend/public/assets/generated/coin-icon.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the generated Gold coin icon asset at this exact path and wire it into coin-related UI visuals (e.g., Coin Counter, reward tiers)."
+        },
+        {
+          "path": "frontend/public/assets/generated/hero-bg.dim_1920x1080.png",
+          "operation": "create",
+          "description": "Add the generated dark glassmorphism hero background asset at this exact path and use it as the hero section background."
+        },
+        {
+          "path": "frontend/public/assets/generated/qr-frame.dim_800x800.png",
+          "operation": "create",
+          "description": "Add the generated QR placeholder frame asset at this exact path and use it inside the Add Funds modal QR area."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Implement the single-page layout with section anchors/refs (Hero, Connect Phone, Reward Calculator, My Wallet, Scan Rewards) and smooth scroll behavior between sections."
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Ensure the app uses the created global stylesheet and renders the new single-page App layout consistently."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement the Hero section with exact headline, “Scan Now” CTA to move into scan flow, and a live animated Coin Counter that count-ups on balance increases.",
+      "acceptanceCriteria": [
+        "Hero headline and CTA copy match exactly",
+        "Clicking “Scan Now” moves the user into the scan flow section (scroll and/or focus)",
+        "Coin Counter is visible in the hero and updates whenever the user’s coin balance changes",
+        "On coin balance increases, the counter performs a fast count-up animation from previous balance to new balance"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/scan-earn/Hero.tsx",
+          "operation": "create",
+          "description": "Create the Hero section UI with headline text exactly “Turn Payments into Profits”, primary CTA labeled “Scan Now”, hero background using frontend/public/assets/generated/hero-bg.dim_1920x1080.png, and embed the CoinCounter component. Use shadcn-ui components (e.g., Button/Card) for consistent UI. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/scan-earn/CoinCounter.tsx",
+          "operation": "create",
+          "description": "Implement a live coin counter display (including Gold styling and optional icon using frontend/public/assets/generated/coin-icon.dim_256x256.png) that animates count-up on coin balance increases."
+        },
+        {
+          "path": "frontend/src/hooks/useCountUp.ts",
+          "operation": "create",
+          "description": "Add a reusable requestAnimationFrame-based count-up hook to animate numeric transitions quickly when coin balance increases."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the Hero section into the single-page layout and connect “Scan Now” to scroll/focus into the Scan Rewards section."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Add a first-step “Connect phone number” UI for Indian phone numbers with basic validation and gating for subsequent steps.",
+      "acceptanceCriteria": [
+        "UI provides a phone input labeled in English and accepts Indian-format phone numbers (validation is basic: digits + length)",
+        "User cannot proceed to payment tier selection until a phone number is entered and accepted",
+        "Backend can associate user state (coin balance, bank details, pending payments) to the connected phone number"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/scan-earn/PhoneConnect.tsx",
+          "operation": "create",
+          "description": "Create the Connect Phone Number step UI with an English label and basic Indian phone validation (digits + length). Use shadcn-ui Input/Button components to match theme. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/usePhoneConnect.ts",
+          "operation": "create",
+          "description": "Add a React Query mutation hook that calls the backend phone-connect capability and exposes connected state to gate later steps."
+        },
+        {
+          "path": "frontend/src/lib/format.ts",
+          "operation": "create",
+          "description": "Add small helpers for phone normalization/validation and INR formatting (₹) to keep UI consistent and English-only."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire PhoneConnect as the first section in the flow and disable/lock payment tier selection and wallet actions until phone is connected."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Build the Reward Calculator selectable tier grid using the exact INR→coin mapping and propagate the selected tier to the add-funds flow.",
+      "acceptanceCriteria": [
+        "Reward tiers render as a grid of selectable cards/buttons",
+        "Each tier displays INR amount using the ₹ symbol and the corresponding coin amount",
+        "Only one tier can be selected at a time and the selected state is visually obvious",
+        "The selected tier is used by the Add Funds / payment flow as the chosen amount"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/scan-earn/RewardCalculator.tsx",
+          "operation": "create",
+          "description": "Implement the interactive tier grid with the exact mapping: ₹10=15, ₹30=55, ₹50=95, ₹180=390, ₹500=1045, ₹1k=2200; show ₹ and coin values; enforce single selection with clear selected styling (Gold highlight). Use shadcn-ui Card/Button for selectable tiles. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/state/flowStore.ts",
+          "operation": "create",
+          "description": "Add a lightweight shared state module (React context or simple state container) to store connected phone status, selected tier, and UI flow step so Add Funds and other sections can consume the current selected amount."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire RewardCalculator into the single-page flow and ensure tier selection is disabled until phone is connected; persist selected tier in shared flow state for the Add Funds modal."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Create a “My Wallet” section with a persisted Add Bank Account form and an Add Funds button, restoring saved details when reconnecting.",
+      "acceptanceCriteria": [
+        "My Wallet section is present and visually consistent with the app theme",
+        "Add Bank Account form includes the fields: Account Holder Name, Bank Name, Account Number, IFSC",
+        "Submitting the form saves the data and shows a success state in the UI",
+        "Reloading the page and reconnecting the same phone number restores the saved bank account details"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/scan-earn/Wallet.tsx",
+          "operation": "create",
+          "description": "Build the My Wallet section including (1) Add Bank Account form fields: Account Holder Name, Bank Name, Account Number, IFSC; (2) coin balance display; and (3) an “Add Funds” button that opens the AddFundsModal. Use shadcn-ui Form-like primitives (Input/Button/Card) for consistent styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useWallet.ts",
+          "operation": "create",
+          "description": "Add React Query hooks for reading coin balance and bank account details and for submitting bank account details; ensure successful mutations invalidate/refetch wallet queries."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire My Wallet section into the single-page layout; ensure it renders restored bank details after phone connect (via React Query refetch) and shows clear success state after saving."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Implement an Add Funds modal with QR display, fixed payment number, Transaction ID submission/verify, and simulated payment confirmed flow that credits coins and triggers count-up.",
+      "acceptanceCriteria": [
+        "Clicking “Add Funds” opens a modal/popup without leaving the page",
+        "Modal displays a QR code (visually scannable) and the payment number “9541525891”",
+        "Modal includes a Transaction ID input and a clear submit/verify control",
+        "Submitting a Transaction ID records it in backend state tied to the connected phone number and selected tier",
+        "On successful submission, the app transitions to a “payment confirmed” state (simulated) that credits coins and triggers the coin counter count-up animation"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/scan-earn/AddFundsModal.tsx",
+          "operation": "create",
+          "description": "Create a modal/popup using shadcn-ui Dialog that shows a QR area framed with frontend/public/assets/generated/qr-frame.dim_800x800.png, displays payment number exactly “9541525891”, and includes a Transaction ID input + verify action. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useAddFunds.ts",
+          "operation": "create",
+          "description": "Add a React Query mutation hook for submitting Transaction ID + selected tier amount to the backend add-funds capability; on success, invalidate/refetch coin balance and any related user state so coin counter updates immediately."
+        },
+        {
+          "path": "frontend/src/components/scan-earn/PaymentConfirmedToast.tsx",
+          "operation": "create",
+          "description": "Add a lightweight simulated “payment confirmed” UI state/animation after successful Transaction ID submission (e.g., inline banner/toast) to reinforce the demo flow without leaving the page."
+        },
+        {
+          "path": "frontend/src/components/scan-earn/Wallet.tsx",
+          "operation": "modify",
+          "description": "Wire the Add Funds button to open AddFundsModal, enforce disabled states until phone is connected and a tier is selected, and display errors returned from the add-funds mutation (e.g., duplicate Transaction ID)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Add a Scan Rewards demo with a simulated camera UI or scan button that triggers a success animation and optionally affects coin display.",
+      "acceptanceCriteria": [
+        "Scan Rewards section provides an obvious scan interaction (camera-like frame or a Scan button)",
+        "Triggering a scan shows a success animation/state change",
+        "Scan completion is recorded in backend state for the connected phone number (e.g., lastScanAt and/or scanCount)",
+        "If scan awards coins, the coin balance updates and the hero coin counter animates accordingly"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/scan-earn/ScanRewards.tsx",
+          "operation": "create",
+          "description": "Implement a Scan Rewards section with a camera-like frame and/or Scan button; on interaction, show a success animation/state change and (optionally) trigger a demo coin award flow if supported by available backend capabilities."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire ScanRewards into the single-page layout and ensure Hero “Scan Now” scrolls/focuses to this section."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Implement the full guided single-page flow with gated CTAs and real-time coin balance updates across Hero and Wallet.",
+      "acceptanceCriteria": [
+        "Flow is guided with clear CTAs and disabled states until prerequisites are met (phone connected, tier selected)",
+        "After Transaction ID submission, the selected tier’s coin amount is added to the user’s coin balance",
+        "Updated coin balance appears consistently in the hero coin counter and wallet balance display without a full page reload",
+        "All user-facing text is in English and amounts are displayed in INR using ₹"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Orchestrate the single-page guided flow (connect phone → pick tier → open modal → submit transaction → show confirmation) with clear disabled states and consistent English copy; ensure coin balance query is shared and displayed in both Hero CoinCounter and Wallet."
+        },
+        {
+          "path": "frontend/src/state/flowStore.ts",
+          "operation": "modify",
+          "description": "Ensure shared flow state supports gating/step progression and can be used to drive smooth scrolling/focus transitions between steps."
+        },
+        {
+          "path": "frontend/src/lib/format.ts",
+          "operation": "modify",
+          "description": "Ensure all amounts render in INR using the ₹ symbol and all user-facing labels remain English-only."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Modularize the frontend into required components and use React Query for backend reads/mutations with invalidation to keep UI consistent.",
+      "acceptanceCriteria": [
+        "Frontend code is organized into reusable components rather than one large file",
+        "Backend interactions (load user/balance, save bank, submit transaction, record scan) are implemented via React Query queries/mutations",
+        "After each successful mutation, affected queries are invalidated/refetched so displayed balances/state update promptly"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/lib/backendClient.ts",
+          "operation": "create",
+          "description": "Create a small typed backend client wrapper aligned to frontend/src/backend.d.ts to centralize backend calls for React Query hooks (connect phone, get balance, get tiers, get/set bank, add funds)."
+        },
+        {
+          "path": "frontend/src/hooks/queryKeys.ts",
+          "operation": "create",
+          "description": "Add shared React Query keys for user connection status, coin balance, bank account, reward tiers, and transaction history to standardize invalidation/refetch across components."
+        },
+        {
+          "path": "frontend/src/components/scan-earn/index.ts",
+          "operation": "create",
+          "description": "Export the modular Scan & Earn feature components (Hero/CoinCounter, PhoneConnect, RewardCalculator, Wallet, AddFundsModal, ScanRewards) to keep App composition clean."
+        },
+        {
+          "path": "frontend/src/components/ui/button.tsx",
+          "operation": "create",
+          "description": "Add shadcn-ui Button component used by CTAs across the app to ensure consistent styling and behavior. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ui/input.tsx",
+          "operation": "create",
+          "description": "Add shadcn-ui Input component for phone, bank, and transaction ID inputs. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ui/card.tsx",
+          "operation": "create",
+          "description": "Add shadcn-ui Card component for glassmorphism panels, reward tier tiles, and wallet sections. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ui/dialog.tsx",
+          "operation": "create",
+          "description": "Add shadcn-ui Dialog component to power the Add Funds modal/popup. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/lib/utils.ts",
+          "operation": "create",
+          "description": "Add shared utility helpers (e.g., className merging) commonly required by shadcn-ui components. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Refactor App composition to use the modular components and React Query hooks so balance/state updates remain consistent across the page."
+        }
+      ]
+    }
+  ]
+}

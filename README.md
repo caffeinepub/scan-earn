@@ -1,2 +1,3 @@
-# scan-earn
-Exported from Caffeine project: Scan &amp; Earn
+## Scan &amp; Earn
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

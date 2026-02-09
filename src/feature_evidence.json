@@ -1,0 +1,184 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-create-a-single-page-mobile-first-marketing-product-experience-for-a-scan-earn-rewards-platform-with-a-modern-fintech-dark-mode-glassmorphism-ui-using-electric-blue-as-the-primary-accent-and-gold-for-coin-related-highlights",
+      "featureTitle": "Create a single-page, mobile-first marketing + product experience for a “Scan & Earn” rewards platform with a modern fintech dark-mode, glassmorphism UI using Electric Blue as the primary accent and Gold for coin-related highlights.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/index.css",
+        "frontend/src/main.tsx",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-the-hero-section-containing-1-headline-text-exactly-turn-payments-into-profits-2-a-primary-cta-button-labeled-scan-now-and-3-a-live-coin-counter-demo-that-animates-count-up-when-the-user-earns-coins-in-the-app-flow",
+      "featureTitle": "Implement the Hero section containing: (1) headline text exactly “Turn Payments into Profits”, (2) a primary CTA button labeled “Scan Now”, and (3) a live “Coin Counter” demo that animates (count-up) when the user earns coins in the app flow.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/scan-earn/CoinCounter.tsx",
+        "frontend/src/components/scan-earn/Hero.tsx",
+        "frontend/src/hooks/useCountUp.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-connect-phone-number-step-as-the-first-step-in-the-user-flow-allowing-a-user-to-enter-an-indian-phone-number-and-proceed-no-sms-verification-required",
+      "featureTitle": "Add a “Connect phone number” step as the first step in the user flow, allowing a user to enter an Indian phone number and proceed (no SMS verification required).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/scan-earn/PhoneConnect.tsx",
+        "frontend/src/lib/format.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-the-reward-calculator-as-an-interactive-grid-of-selectable-payment-tiers-using-the-exact-inr-coin-mapping-10-15-30-55-50-95-180-390-500-1045-1k-2200-selecting-a-tier-should-set-it-as-the-current-intended-add-funds-amount-for-the-flow",
+      "featureTitle": "Build the “Reward Calculator” as an interactive grid of selectable payment tiers using the exact INR→coin mapping: ₹10=15, ₹30=55, ₹50=95, ₹180=390, ₹500=1045, ₹1k=2200. Selecting a tier should set it as the current intended add-funds amount for the flow.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/scan-earn/RewardCalculator.tsx",
+        "frontend/src/state/flowStore.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-my-wallet-section-that-includes-1-an-add-bank-account-form-and-2-an-add-funds-button-the-bank-form-should-capture-standard-fields-account-holder-name-bank-name-account-number-ifsc-and-persist-them-for-the-connected-phone-number",
+      "featureTitle": "Create a “My Wallet” section that includes: (1) an “Add Bank Account” form and (2) an “Add Funds” button. The bank form should capture standard fields (account holder name, bank name, account number, IFSC) and persist them for the connected phone number.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/scan-earn/Wallet.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-the-gpay-bhim-add-funds-gateway-popup-modal-when-add-funds-is-clicked-show-a-popup-containing-1-a-qr-code-2-payment-number-exactly-9541525891-and-3-a-transaction-id-input-field-with-a-submit-verify-action-that-drives-the-coin-crediting-flow-for-the-selected-tier",
+      "featureTitle": "Implement the GPay/BHIM add-funds gateway popup/modal. When “Add Funds” is clicked, show a popup containing: (1) a QR code, (2) payment number exactly “9541525891”, and (3) a Transaction ID input field with a submit/verify action that drives the coin crediting flow for the selected tier.",
+      "files": [
+        "frontend/src/components/scan-earn/AddFundsModal.tsx",
+        "frontend/src/components/scan-earn/Wallet.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-scan-rewards-experience-with-a-simulated-camera-interface-or-a-scan-button-that-triggers-a-success-animation-when-a-scan-is-completed-and-can-optionally-award-coins-or-mark-scan-completion-as-part-of-the-demo-flow",
+      "featureTitle": "Add a “Scan Rewards” experience with a simulated camera interface or a “Scan” button that triggers a “Success” animation when a scan is completed and can optionally award coins (or mark scan completion) as part of the demo flow.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/scan-earn/ScanRewards.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-the-full-user-flow-on-a-single-page-connect-phone-number-select-payment-tier-open-gpay-bhim-modal-simulated-redirect-submit-transaction-id-return-to-the-main-view-with-updated-coin-balance-the-coin-balance-must-update-in-real-time-across-all-ui-locations-where-it-is-shown",
+      "featureTitle": "Implement the full user flow on a single page: Connect phone number → select payment tier → open GPay/BHIM modal (simulated redirect) → submit Transaction ID → return to the main view with updated coin balance. The coin balance must update in real time across all UI locations where it is shown.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/lib/format.ts",
+        "frontend/src/state/flowStore.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-structure-the-frontend-into-modular-components-hero-coincounter-phoneconnect-rewardcalculator-wallet-addfundsmodal-scanrewards-shared-layout-and-use-react-query-for-backend-reads-mutations-so-ui-state-stays-consistent-and-updates-immediately-after-actions",
+      "featureTitle": "Structure the frontend into modular components (Hero/CoinCounter, PhoneConnect, RewardCalculator, Wallet, AddFundsModal, ScanRewards, shared layout) and use React Query for backend reads/mutations so UI state stays consistent and updates immediately after actions.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/scan-earn/index.ts",
+        "frontend/src/lib/utils.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

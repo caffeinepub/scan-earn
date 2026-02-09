@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Build a high-conversion single-page \"Scan & Earn\" fintech rewards web app (dark-mode glassmorphism) in React + Tailwind, featuring a live coin counter, reward tier calculator, wallet + bank account form, GPay/BHIM add-funds QR popup with transaction ID verification, and a simulated scan-to-earn flow that updates coin balance in real time.",
+  "architectural_notes": [
+    "Frontend stack: React with Tailwind CSS; mobile-first responsive SPA.",
+    "UI theme: modern fintech dark mode with glassmorphism; primary colors electric blue + gold coin accents.",
+    "State management should support real-time coin balance updates across components (e.g., centralized app state).",
+    "Include animated coin counter/count-up behavior when payments are confirmed and on scan success."
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Gold coin icon/illustration in a sleek fintech style (coin-icon.dim_256x256.png)\n- Dark glassmorphism hero background with subtle electric-blue gradients and abstract shapes (hero-bg.dim_1920x1080.png)\n- QR code placeholder graphic with a clean frame and dark-mode styling (qr-frame.dim_800x800.png)",
+  "existing_features": [
+    {
+      "id": "feature-create-a-single-page-mobile-first-marketing-product-experience-for-a-scan-earn-rewards-platform-with-a-modern-fintech-dark-mode-glassmorphism-ui-using-electric-blue-as-the-primary-accent-and-gold-for-coin-related-highlights",
+      "title": "Create a single-page, mobile-first marketing + product experience for a “Scan & Earn” rewards platform with a modern fintech dark-mode, glassmorphism UI using Electric Blue as the primary accent and Gold for coin-related highlights.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-hero-section-containing-1-headline-text-exactly-turn-payments-into-profits-2-a-primary-cta-button-labeled-scan-now-and-3-a-live-coin-counter-demo-that-animates-count-up-when-the-user-earns-coins-in-the-app-flow",
+      "title": "Implement the Hero section containing: (1) headline text exactly “Turn Payments into Profits”, (2) a primary CTA button labeled “Scan Now”, and (3) a live “Coin Counter” demo that animates (count-up) when the user earns coins in the app flow.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-connect-phone-number-step-as-the-first-step-in-the-user-flow-allowing-a-user-to-enter-an-indian-phone-number-and-proceed-no-sms-verification-required",
+      "title": "Add a “Connect phone number” step as the first step in the user flow, allowing a user to enter an Indian phone number and proceed (no SMS verification required).",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-the-reward-calculator-as-an-interactive-grid-of-selectable-payment-tiers-using-the-exact-inr-coin-mapping-10-15-30-55-50-95-180-390-500-1045-1k-2200-selecting-a-tier-should-set-it-as-the-current-intended-add-funds-amount-for-the-flow",
+      "title": "Build the “Reward Calculator” as an interactive grid of selectable payment tiers using the exact INR→coin mapping: ₹10=15, ₹30=55, ₹50=95, ₹180=390, ₹500=1045, ₹1k=2200. Selecting a tier should set it as the current intended add-funds amount for the flow.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-my-wallet-section-that-includes-1-an-add-bank-account-form-and-2-an-add-funds-button-the-bank-form-should-capture-standard-fields-account-holder-name-bank-name-account-number-ifsc-and-persist-them-for-the-connected-phone-number",
+      "title": "Create a “My Wallet” section that includes: (1) an “Add Bank Account” form and (2) an “Add Funds” button. The bank form should capture standard fields (account holder name, bank name, account number, IFSC) and persist them for the connected phone number.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-gpay-bhim-add-funds-gateway-popup-modal-when-add-funds-is-clicked-show-a-popup-containing-1-a-qr-code-2-payment-number-exactly-9541525891-and-3-a-transaction-id-input-field-with-a-submit-verify-action-that-drives-the-coin-crediting-flow-for-the-selected-tier",
+      "title": "Implement the GPay/BHIM add-funds gateway popup/modal. When “Add Funds” is clicked, show a popup containing: (1) a QR code, (2) payment number exactly “9541525891”, and (3) a Transaction ID input field with a submit/verify action that drives the coin crediting flow for the selected tier.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-scan-rewards-experience-with-a-simulated-camera-interface-or-a-scan-button-that-triggers-a-success-animation-when-a-scan-is-completed-and-can-optionally-award-coins-or-mark-scan-completion-as-part-of-the-demo-flow",
+      "title": "Add a “Scan Rewards” experience with a simulated camera interface or a “Scan” button that triggers a “Success” animation when a scan is completed and can optionally award coins (or mark scan completion) as part of the demo flow.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-full-user-flow-on-a-single-page-connect-phone-number-select-payment-tier-open-gpay-bhim-modal-simulated-redirect-submit-transaction-id-return-to-the-main-view-with-updated-coin-balance-the-coin-balance-must-update-in-real-time-across-all-ui-locations-where-it-is-shown",
+      "title": "Implement the full user flow on a single page: Connect phone number → select payment tier → open GPay/BHIM modal (simulated redirect) → submit Transaction ID → return to the main view with updated coin balance. The coin balance must update in real time across all UI locations where it is shown.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-structure-the-frontend-into-modular-components-hero-coincounter-phoneconnect-rewardcalculator-wallet-addfundsmodal-scanrewards-shared-layout-and-use-react-query-for-backend-reads-mutations-so-ui-state-stays-consistent-and-updates-immediately-after-actions",
+      "title": "Structure the frontend into modular components (Hero/CoinCounter, PhoneConnect, RewardCalculator, Wallet, AddFundsModal, ScanRewards, shared layout) and use React Query for backend reads/mutations so UI state stays consistent and updates immediately after actions.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Landing/hero section with headline \"Turn Payments into Profits\", \"Scan Now\" CTA, and live coin counter demo (dark fintech glassmorphism branding)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Reward Calculator: interactive grid of payment tiers mapping INR to coins (₹10=15, ₹30=55, ₹50=95, ₹180=390, ₹500=1045, ₹1k=2200)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Wallet section: \"My Wallet\" with Add Bank Account form and Add Funds button",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Add Funds flow: GPay/BHIM popup showing QR code + payment number 9541525891 and a Transaction ID input for verification",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Scan Rewards: simulated camera interface/button that triggers a success animation and updates coin balance",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "User flow implementation: phone number connect -> select tier -> redirect/simulated GPay/BHIM -> return with updated coin balance",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Tech requirements: React + Tailwind, mobile-first responsive layout, modular components, real-time coin balance updates and counter/count-up animations",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Add backend Motoko data storage and APIs required for: per-phone user profile, coin balance, bank account details, selected tier (optional), and recording submitted Transaction IDs to prevent accidental double-crediting of the same Transaction ID for a given phone number.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Scan & Earn",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

@@ -1,0 +1,229 @@
+{
+  "kind": "build_request",
+  "title": "Single-page “Scan & Earn” fintech rewards landing app with wallet, add-funds QR, and scan-to-earn demo",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Create a single-page, mobile-first marketing + product experience for a “Scan & Earn” rewards platform with a modern fintech dark-mode, glassmorphism UI using Electric Blue as the primary accent and Gold for coin-related highlights.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Theme: Modern Fintech (Dark mode, sleek glassmorphism effects).\nPrimary Colors: Electric Blue and Gold (for coins)."
+        ]
+      },
+      "acceptanceCriteria": [
+        "App renders as a single page with clear section hierarchy and smooth scrolling between sections",
+        "Dark-mode glassmorphism styling is applied consistently (blurred panels, subtle borders, soft shadows)",
+        "Electric Blue is used for primary CTAs/accents and Gold is used for coin counters/coin visuals",
+        "Layout is responsive and optimized for mobile (≤430px) and scales cleanly to desktop"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement the Hero section containing: (1) headline text exactly “Turn Payments into Profits”, (2) a primary CTA button labeled “Scan Now”, and (3) a live “Coin Counter” demo that animates (count-up) when the user earns coins in the app flow.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Hero Section: A bold headline \"Turn Payments into Profits\" with a \"Scan Now\" button and a live \"Coin Counter\" demo.",
+          "Focus on describing the animations (e.g., \"The coin counter should count up rapidly when a payment is confirmed\")."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Hero headline and CTA copy match exactly",
+        "Clicking “Scan Now” moves the user into the scan flow section (scroll and/or focus)",
+        "Coin Counter is visible in the hero and updates whenever the user’s coin balance changes",
+        "On coin balance increases, the counter performs a fast count-up animation from previous balance to new balance"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add a “Connect phone number” step as the first step in the user flow, allowing a user to enter an Indian phone number and proceed (no SMS verification required).",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "User lands on the page → Connects phone number → Selects a payment tier → Redirects to GPay/BHIM → Returns to see updated Coin Balance."
+        ]
+      },
+      "acceptanceCriteria": [
+        "UI provides a phone input labeled in English and accepts Indian-format phone numbers (validation is basic: digits + length)",
+        "User cannot proceed to payment tier selection until a phone number is entered and accepted",
+        "Backend can associate user state (coin balance, bank details, pending payments) to the connected phone number"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Build the “Reward Calculator” as an interactive grid of selectable payment tiers using the exact INR→coin mapping: ₹10=15, ₹30=55, ₹50=95, ₹180=390, ₹500=1045, ₹1k=2200. Selecting a tier should set it as the current intended add-funds amount for the flow.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "The Reward Calculator: Create an interactive grid showing the investment tiers.\nData: ₹10=15 coins, ₹30=55, ₹50=95, ₹180=390, ₹500=1045, ₹1k=2200."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Reward tiers render as a grid of selectable cards/buttons",
+        "Each tier displays INR amount using the ₹ symbol and the corresponding coin amount",
+        "Only one tier can be selected at a time and the selected state is visually obvious",
+        "The selected tier is used by the Add Funds / payment flow as the chosen amount"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Create a “My Wallet” section that includes: (1) an “Add Bank Account” form and (2) an “Add Funds” button. The bank form should capture standard fields (account holder name, bank name, account number, IFSC) and persist them for the connected phone number.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Wallet Integration: A \"My Wallet\" section with \"Add Bank Account\" (form) and \"Add Funds\" (button)."
+        ]
+      },
+      "acceptanceCriteria": [
+        "My Wallet section is present and visually consistent with the app theme",
+        "Add Bank Account form includes the fields: Account Holder Name, Bank Name, Account Number, IFSC",
+        "Submitting the form saves the data and shows a success state in the UI",
+        "Reloading the page and reconnecting the same phone number restores the saved bank account details"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Implement the GPay/BHIM add-funds gateway popup/modal. When “Add Funds” is clicked, show a popup containing: (1) a QR code, (2) payment number exactly “9541525891”, and (3) a Transaction ID input field with a submit/verify action that drives the coin crediting flow for the selected tier.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "GPay/BHIM Gateway: When \"Add Funds\" is clicked, show a popup with a QR code and the payment number 9541525891. Include a field for the user to paste their Transaction ID for verification."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Clicking “Add Funds” opens a modal/popup without leaving the page",
+        "Modal displays a QR code (visually scannable) and the payment number “9541525891”",
+        "Modal includes a Transaction ID input and a clear submit/verify control",
+        "Submitting a Transaction ID records it in backend state tied to the connected phone number and selected tier",
+        "On successful submission, the app transitions to a “payment confirmed” state (simulated) that credits coins and triggers the coin counter count-up animation"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Add a “Scan Rewards” experience with a simulated camera interface or a “Scan” button that triggers a “Success” animation when a scan is completed and can optionally award coins (or mark scan completion) as part of the demo flow.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Scan Rewards: A simulated camera interface or button that triggers a \"Success\" animation when a scan is completed."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Scan Rewards section provides an obvious scan interaction (camera-like frame or a Scan button)",
+        "Triggering a scan shows a success animation/state change",
+        "Scan completion is recorded in backend state for the connected phone number (e.g., lastScanAt and/or scanCount)",
+        "If scan awards coins, the coin balance updates and the hero coin counter animates accordingly"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Implement the full user flow on a single page: Connect phone number → select payment tier → open GPay/BHIM modal (simulated redirect) → submit Transaction ID → return to the main view with updated coin balance. The coin balance must update in real time across all UI locations where it is shown.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "User lands on the page → Connects phone number → Selects a payment tier → Redirects to GPay/BHIM → Returns to see updated Coin Balance.\nEnsure ... the coin balance updates in real-time."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Flow is guided with clear CTAs and disabled states until prerequisites are met (phone connected, tier selected)",
+        "After Transaction ID submission, the selected tier’s coin amount is added to the user’s coin balance",
+        "Updated coin balance appears consistently in the hero coin counter and wallet balance display without a full page reload",
+        "All user-facing text is in English and amounts are displayed in INR using ₹"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Add backend Motoko data storage and APIs required for: per-phone user profile, coin balance, bank account details, selected tier (optional), and recording submitted Transaction IDs to prevent accidental double-crediting of the same Transaction ID for a given phone number.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Ensure ... components are modular and the coin balance updates in real-time.",
+          "Include a field for the user to paste their Transaction ID for verification."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes methods to: get/create user by phone, get balance, set bank details, submit transaction ID with tier amount, and record scans",
+        "Backend prevents crediting the same Transaction ID more than once for the same connected phone number",
+        "Backend returns updated coin balance after credit operations so the frontend can update immediately"
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Structure the frontend into modular components (Hero/CoinCounter, PhoneConnect, RewardCalculator, Wallet, AddFundsModal, ScanRewards, shared layout) and use React Query for backend reads/mutations so UI state stays consistent and updates immediately after actions.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Build this using React with Tailwind CSS for a responsive, mobile-first design. Ensure all components are modular and the coin balance updates in real-time."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Frontend code is organized into reusable components rather than one large file",
+        "Backend interactions (load user/balance, save bank, submit transaction, record scan) are implemented via React Query queries/mutations",
+        "After each successful mutation, affected queries are invalidated/refetched so displayed balances/state update promptly"
+      ]
+    }
+  ],
+  "constraints": [
+    "Use React + TypeScript on the frontend with Tailwind CSS and React Query",
+    "Backend must be Motoko in a single-actor architecture (all logic in backend/main.mo); only add migration.mo if an upgrade requires it",
+    "Do not modify any files under frontend/immutablePaths; compose UI using existing components instead",
+    "Use English for all user-facing text",
+    "Display currency in INR using the ₹ symbol",
+    "Do not add third-party authentication providers; phone connect is a local app step (no SMS requirement implied)"
+  ],
+  "nonGoals": [
+    "Implementing real payment processing or actual GPay/BHIM verification beyond a simulated confirmation flow",
+    "SMS/OTP verification for phone numbers",
+    "Multi-page routing experience (must remain a single-page app)",
+    "Push notifications, emails, or real-time sockets"
+  ],
+  "imageRequirements": {
+    "required": [
+      "Gold coin icon/illustration in a sleek fintech style (coin-icon.dim_256x256.png)",
+      "Dark glassmorphism hero background with subtle electric-blue gradients and abstract shapes (hero-bg.dim_1920x1080.png)",
+      "QR code placeholder graphic with a clean frame and dark-mode styling (qr-frame.dim_800x800.png)"
+    ],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}
