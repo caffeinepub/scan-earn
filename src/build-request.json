@@ -1,131 +1,108 @@
 {
   "kind": "build_request",
-  "title": "Enforce 7-digit CTR + access code, and redirect Scan to WhatsApp with prefilled NFC request",
+  "title": "Remove all authentication flows and eliminate canister/connection system so the app opens directly",
   "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update the CTR connect flow UI to require (a) a CTR value that is exactly 7 digits and (b) an access code that must equal \"IQL0918\" (case-insensitive acceptance is OK, but store/display it uppercased). The user must not be able to proceed/\"Connect\" unless both validations pass, and error messages must be shown in English.",
+      "text": "Remove all user-facing authentication and verification flows so users can access the app immediately without any login steps, including: CTR ID, access code, email/password, face authentication, and any Internet Identity sign-in UI.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "CTR MUST ME 7 DIGITS USER NEED TO ENTER ONLY IQL0918."
+          "Remove all authentications include CTR AND ACCESS CODE AND EMAIL PASSWORD AND FACE AUTHENTICATION USER CAN ACCESS APP DIRECTLY"
         ]
       },
       "acceptanceCriteria": [
-        "CTR Connect screen copy no longer references a 13-character CTR format or an \"IN\" suffix.",
-        "CTR input only accepts digits and is limited to 7 characters.",
-        "Access code input is present and required; it validates against exactly \"IQL0918\".",
-        "The Connect button is disabled until CTR is 7 digits and access code matches.",
-        "Invalid inputs show clear English error messages (and existing toast behavior remains consistent)."
+        "No screen, modal, banner, or section prompts the user to enter a CTR ID or access code.",
+        "No screen, modal, banner, or section prompts the user to enter email/password.",
+        "No face verification UI is shown or required anywhere in the app.",
+        "There is no Internet Identity sign-in button or login prompt shown anywhere in the app.",
+        "User can open the app in a fresh browser session and immediately see the main app content without interacting with any authentication UI."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Change CTR validation logic to match the new requirement: CTR must be exactly 7 digits. Remove the previous 13-character + \"IN\" format validation from the validation helper(s) used by the CTR connect flow.",
+      "text": "Remove any feature gating or conditional navigation that depends on authentication, identity state, CTR connection, access code validation, or connection state, and ensure all primary sections (Stocks & Funds, Withdrawal, Customer Support) are accessible immediately on app load.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "CTR MUST ME 7 DIGITS"
+          "USER CAN ACCESS APP DIRECTLY"
         ]
       },
       "acceptanceCriteria": [
-        "Calling the CTR validation with anything other than 7 digits returns invalid with an English error message.",
-        "\"1234567\" is treated as valid CTR.",
-        "Any alphabetic characters, spaces, or length != 7 are treated as invalid CTR."
+        "On initial load, the app shows a primary section (not a login/connection/auth screen).",
+        "Navigation menu contains only main sections (Stocks & Funds, Withdrawal, Customer Support) and none related to login/connection/auth/verification.",
+        "All main sections render and are usable without requiring any identity/CTR/access-code step."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Implement backend support for CTR registration so that the system can enforce \"Only per CTR Registered user\": add backend methods to (1) connect/register a CTR for the calling principal and (2) query whether the caller is already connected/registered. Enforce that a principal can only register one CTR, and that the same CTR cannot be registered by multiple principals.",
-      "target": "backend",
+      "text": "Remove CTR/access-code related validation utilities and any UI logic that depends on them so the app no longer enforces CTR ID allowlists or shared access-code allowlists.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "Only per CTR Registered user"
+          "Remove all authentications include CTR AND ACCESS CODE"
         ]
       },
       "acceptanceCriteria": [
-        "Backend exposes a method to register/connect CTR for the caller and persists the association.",
-        "Backend exposes a method to query whether the caller is connected/registered (boolean).",
-        "Attempting to register a second CTR for the same principal fails with a clear error.",
-        "Attempting to register a CTR that is already registered to another principal fails with a clear error.",
-        "State is preserved across canister upgrades (add a migration if required by the chosen state representation)."
+        "No code path in the UI blocks access based on `validateCtrId` or `validateAccessCode` checks.",
+        "No user-facing error messages referencing CTR ID or access code validation appear during normal app usage."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Wire the existing React Query hooks for CTR connection to the backend implementation so the CTR connect UI can actually connect and the app can correctly detect connected state after refresh/reload.",
-      "target": "both",
+      "text": "Eliminate the canister/connection configuration system from the end-user experience by removing any connection/config initialization banners, backend reachability banners, offline mode notices, and any connection settings panels from the rendered UI so the app does not present canister configuration as a user task.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "Only per CTR Registered user"
+          "REMOVE CANSISTER SYSTEM PERMANENTLY"
         ]
       },
       "acceptanceCriteria": [
-        "The \"Connect\" action no longer throws \"Backend method connectCtrId not implemented yet\".",
-        "After a successful connect, the app treats the user as connected (the scan section gating works as designed).",
-        "On page reload, connected users are still recognized as connected via the backend query hook."
+        "No connection/config/offline/reachability banners or notices are displayed anywhere in the app UI.",
+        "There is no visible UI that asks the user to configure or validate a canister ID."
       ]
     },
     {
       "id": "REQ-5",
-      "text": "Replace the current simulated scan behavior with a \"Scan\" action that redirects the user to WhatsApp for Indian number +91 9541525891 with a prefilled message that includes exactly: (1) \"Get NFC code of 4 digits\" and (2) \"Code works only: CTTH\" and (3) \"Only per CTR Registered user\". Use an https://wa.me/ link (or equivalent WhatsApp deep link) and URL-encode the message.",
-      "target": "frontend",
+      "text": "Remove backend-side authorization requirements so all backend methods used by the app work for anonymous callers, and preserve compatibility with the existing frontend actor creation by keeping any previously-exposed initialization method as a no-op if it is still referenced by generated interfaces.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "IF user click on scan option redirect to whatsapp indian number 9541525891 add Get NFC code of 4 digits on message to send me Code works only: CTTH Only per CTR Registered user"
+          "Remove all authentications",
+          "REMOVE CANSISTER SYSTEM PERMANENTLY"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking the scan action opens/redirects to WhatsApp chat for +91 9541525891.",
-        "The prefilled WhatsApp message contains the exact required English phrases: \"Get NFC code of 4 digits\", \"Code works only: CTTH\", and \"Only per CTR Registered user\".",
-        "The message text is correctly URL-encoded (no broken link; spaces/newlines handled).",
-        "The prior simulated scanning timer/success animation is removed or no longer triggers on scan click."
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Ensure scan/redirect is only available to CTR-registered users: if a user is not connected/registered, prevent the WhatsApp redirect and show an English error prompt instructing them to connect/register their CTR first.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "Only per CTR Registered user"
-        ]
-      },
-      "acceptanceCriteria": [
-        "When not connected, clicking the scan action does not open WhatsApp.",
-        "When not connected, the app shows an English toast/message like \"Please connect your CTR first\" (or similar).",
-        "When connected, the scan action successfully redirects to WhatsApp."
+        "Backend calls used by the UI (profile, balance, add funds, withdraw, histories, health check) succeed for anonymous principals and do not trap due to authorization/permission checks.",
+        "If the frontend still references an access-control initialization method (e.g., `_initializeAccessControlWithSecret`), the backend continues to expose it and it performs no authorization gating (no-op) so the app remains buildable and runnable.",
+        "No backend feature requires CTR/access code/email/password/face verification to call core methods."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain single-actor (all Motoko logic in backend/main.mo).",
-    "Do not edit files under frontend/src/components/ui or any frontend immutablePaths listed in SYSTEM_CONTEXT; compose them instead.",
-    "Use English for any user-facing text."
+    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything under frontend/src/components/ui (immutable paths).",
+    "Keep backend as a single Motoko actor in backend/main.mo; only add a migration if a stable-state upgrade is required."
   ],
   "nonGoals": [
-    "Implementing WhatsApp Business API integration, message delivery tracking, or inbound code verification via WhatsApp.",
-    "Adding real camera/QR scanning functionality (the scan action is a redirect).",
-    "Adding third-party authentication methods (only Internet Identity is allowed)."
+    "Adding any new authentication mechanism (including third-party auth).",
+    "Adding new product features unrelated to removing authentication and canister/connection UX.",
+    "Introducing external databases or off-chain services."
   ],
   "imageRequirements": {
     "required": [],

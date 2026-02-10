@@ -1,107 +1,140 @@
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Banknote, AlertCircle } from 'lucide-react';
-import { useRequestWithdrawal } from '../../hooks/useQueries';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { useWithdraw, useGetCoinBalance } from '../../hooks/useQueries';
+import { formatCoins } from '../../lib/format';
+import { ArrowDownToLine, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface WithdrawalPanelProps {
-  hasBankAccount: boolean;
-}
+const QUICK_AMOUNTS = [100, 500, 1000, 5000];
 
-const WITHDRAWAL_AMOUNTS = [
-  { amount: 50, label: '₹50', fee: 0 },
-  { amount: 109, label: '₹109', fee: 0 },
-  { amount: 209, label: '₹209', fee: 0 },
-  { amount: 500, label: '₹500', fee: 0 },
-  { amount: 1000, label: '₹1K', fee: 0 },
-  { amount: 2000, label: '₹2K', fee: 0 },
-];
+export function WithdrawalPanel() {
+  const [amount, setAmount] = useState('');
+  const [transactionId, setTransactionId] = useState('');
+  const withdrawMutation = useWithdraw();
+  const { data: balance } = useGetCoinBalance();
 
-export function WithdrawalPanel({ hasBankAccount }: WithdrawalPanelProps) {
-  const requestWithdrawalMutation = useRequestWithdrawal();
+  const handleQuickAmount = (value: number) => {
+    setAmount(value.toString());
+  };
 
-  const handleWithdrawal = async (amount: number) => {
-    if (!hasBankAccount) {
-      toast.error('Please add a bank account first');
+  const handleSubmit = async () => {
+    const amountNum = parseInt(amount);
+
+    if (!amount || isNaN(amountNum) || amountNum <= 0) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
+
+    if (!transactionId.trim()) {
+      toast.error('Please enter a transaction ID');
+      return;
+    }
+
+    const currentBalance = Number(balance || 0n);
+    if (amountNum > currentBalance) {
+      toast.error('Insufficient balance');
       return;
     }
 
     try {
-      await requestWithdrawalMutation.mutateAsync(amount);
-      toast.success(`Withdrawal request for ₹${amount} submitted successfully!`);
+      await withdrawMutation.mutateAsync({
+        transactionId: transactionId.trim(),
+        amount: BigInt(amountNum),
+      });
+
+      toast.success(`Successfully withdrew ${formatCoins(amountNum)}!`);
+      setAmount('');
+      setTransactionId('');
     } catch (error: any) {
-      const errorMessage = error?.message || 'Failed to submit withdrawal request';
-      toast.error(errorMessage);
+      console.error('Withdrawal error:', error);
+      const errorMsg = error.message || 'Failed to process withdrawal';
+      toast.error(errorMsg);
     }
   };
 
   return (
-    <Card className="glass-strong shadow-premium-md">
-      <CardHeader className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-electric-blue/10 rounded-lg flex items-center justify-center">
-            <Banknote className="w-5 h-5 text-electric-blue" />
-          </div>
-          <CardTitle className="text-xl">Withdraw Funds</CardTitle>
-        </div>
-        <CardDescription className="text-base">
-          Request a withdrawal to your bank account
-        </CardDescription>
+    <Card className="glass">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-2xl">
+          <ArrowDownToLine className="w-6 h-6 text-electric-blue" />
+          Withdraw Coins
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {!hasBankAccount && (
-          <div className="flex items-start gap-3 p-4 glass rounded-xl border border-destructive/30">
-            <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-sm font-semibold text-destructive">Bank Account Required</p>
-              <p className="text-sm text-muted-foreground">
-                Please add your bank account details before requesting a withdrawal
-              </p>
-            </div>
-          </div>
-        )}
+        {/* Current Balance */}
+        <div className="glass rounded-xl p-6 text-center space-y-2">
+          <p className="text-sm text-muted-foreground">Available Balance</p>
+          <p className="text-4xl font-bold text-electric-blue">
+            {formatCoins(balance || 0n)}
+          </p>
+        </div>
 
-        <div className="space-y-4">
-          <div className="text-sm font-semibold">Quick Withdrawal Amounts</div>
-          <div className="grid grid-cols-3 gap-3">
-            {WITHDRAWAL_AMOUNTS.map(({ amount, label, fee }) => (
+        {/* Quick Amount Buttons */}
+        <div className="space-y-3">
+          <Label className="text-base font-semibold">Quick Select</Label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {QUICK_AMOUNTS.map((value) => (
               <Button
-                key={amount}
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4 hover:border-electric-blue/40 hover:bg-electric-blue/5 transition-all"
-                onClick={() => handleWithdrawal(amount)}
-                disabled={!hasBankAccount || requestWithdrawalMutation.isPending}
+                key={value}
+                variant={amount === value.toString() ? 'default' : 'outline'}
+                onClick={() => handleQuickAmount(value)}
+                className="h-12"
               >
-                <span className="text-lg font-bold">{label}</span>
-                <span className="text-xs text-muted-foreground font-medium">
-                  {fee === 0 ? 'No charge' : `₹${fee} fee`}
-                </span>
+                {formatCoins(value)}
               </Button>
             ))}
           </div>
         </div>
 
-        <div className="glass rounded-xl p-5 space-y-3">
-          <p className="text-sm font-semibold">Withdrawal Information</p>
-          <ul className="text-sm text-muted-foreground space-y-2">
-            <li className="flex items-start gap-2">
-              <span className="text-electric-blue mt-0.5">•</span>
-              <span>Minimum withdrawal: ₹50</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-electric-blue mt-0.5">•</span>
-              <span>No fees on amounts: ₹50, ₹109, ₹209, ₹500, ₹1K, ₹2K</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-electric-blue mt-0.5">•</span>
-              <span>₹9 fee for amounts between ₹100-₹200 (excluding ₹109, ₹209)</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-electric-blue mt-0.5">•</span>
-              <span>Maximum 2 withdrawal requests per day</span>
-            </li>
-          </ul>
+        {/* Custom Amount Input */}
+        <div className="space-y-3">
+          <Label htmlFor="amount" className="text-base font-semibold">
+            Or Enter Custom Amount
+          </Label>
+          <Input
+            id="amount"
+            type="number"
+            placeholder="Enter amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            min="1"
+          />
         </div>
+
+        {/* Transaction ID Input */}
+        <div className="space-y-3">
+          <Label htmlFor="transactionId" className="text-base font-semibold">
+            Transaction ID
+          </Label>
+          <Input
+            id="transactionId"
+            placeholder="e.g., WTH123456789"
+            value={transactionId}
+            onChange={(e) => setTransactionId(e.target.value)}
+          />
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          onClick={handleSubmit}
+          disabled={withdrawMutation.isPending || !amount || !transactionId.trim()}
+          className="w-full h-12 text-base"
+        >
+          {withdrawMutation.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            <>
+              <ArrowDownToLine className="mr-2 h-5 w-5" />
+              Withdraw
+            </>
+          )}
+        </Button>
       </CardContent>
     </Card>
   );

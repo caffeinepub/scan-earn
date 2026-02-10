@@ -13,31 +13,36 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const TransactionType = IDL.Variant({
+  'addFunds' : IDL.Null,
+  'withdrawal' : IDL.Null,
+});
+export const Transaction = IDL.Record({
+  'transactionType' : TransactionType,
+  'user' : IDL.Principal,
+  'amount' : IDL.Nat,
+  'transactionId' : IDL.Text,
+});
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addFunds' : IDL.Func([IDL.Text, IDL.Nat], [IDL.Bool], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'deleteCanister' : IDL.Func([IDL.Principal], [], []),
-  'getAllCanisters' : IDL.Func(
-      [],
-      [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Text))],
-      ['query'],
-    ),
+  'getAddFundsHistory' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-  'getCanister' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
+  'getCoinBalance' : IDL.Func([], [IDL.Nat], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
-  'isCTRRegistered' : IDL.Func([], [IDL.Bool], ['query']),
+  'getWithdrawalHistory' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
+  'isAvailableForAnonymous' : IDL.Func([], [], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-  'registerCTR' : IDL.Func([IDL.Principal], [], []),
-  'registerCanister' : IDL.Func([IDL.Principal, IDL.Text], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-  'updateCanisterName' : IDL.Func([IDL.Principal, IDL.Text], [], []),
+  'withdraw' : IDL.Func([IDL.Text, IDL.Nat], [], []),
 });
 
 export const idlInitArgs = [];
@@ -48,31 +53,36 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const TransactionType = IDL.Variant({
+    'addFunds' : IDL.Null,
+    'withdrawal' : IDL.Null,
+  });
+  const Transaction = IDL.Record({
+    'transactionType' : TransactionType,
+    'user' : IDL.Principal,
+    'amount' : IDL.Nat,
+    'transactionId' : IDL.Text,
+  });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addFunds' : IDL.Func([IDL.Text, IDL.Nat], [IDL.Bool], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'deleteCanister' : IDL.Func([IDL.Principal], [], []),
-    'getAllCanisters' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Text))],
-        ['query'],
-      ),
+    'getAddFundsHistory' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-    'getCanister' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Text)], ['query']),
+    'getCoinBalance' : IDL.Func([], [IDL.Nat], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
-    'isCTRRegistered' : IDL.Func([], [IDL.Bool], ['query']),
+    'getWithdrawalHistory' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
+    'isAvailableForAnonymous' : IDL.Func([], [], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-    'registerCTR' : IDL.Func([IDL.Principal], [], []),
-    'registerCanister' : IDL.Func([IDL.Principal, IDL.Text], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-    'updateCanisterName' : IDL.Func([IDL.Principal, IDL.Text], [], []),
+    'withdraw' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   });
 };
 

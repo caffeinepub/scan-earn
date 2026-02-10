@@ -1,51 +1,35 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Project involves CTR-based user registration/validation and a scan flow that redirects users to WhatsApp with a prefilled message to request a 4-digit NFC code, with access restricted to registered CTR users and CTTH codes only.",
+  "summary": "App should open directly with no authentication; remove the canister system permanently.",
   "architectural_notes": [
-    "WhatsApp redirect should use wa.me link with prefilled text to +91 9541525891.",
-    "Access control: NFC code issuance/validation must be tied to CTR-registered users; accepted codes limited to CTTH."
+    "App must allow direct access with no authentication (no CTR, access code, email/password, or face authentication).",
+    "Canister system is to be removed permanently; ensure dependent flows are deleted/disabled."
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-update-the-ctr-connect-flow-ui-to-require-a-a-ctr-value-that-is-exactly-7-digits-and-b-an-access-code-that-must-equal-iql0918-case-insensitive-acceptance-is-ok-but-store-display-it-uppercased-the-user-must-not-be-able-to-proceed-connect-unless-both-validations-pass-and-error-messages-must-be-shown-in-english",
-      "title": "Update the CTR connect flow UI to require (a) a CTR value that is exactly 7 digits and (b) an access code that must equal \"IQL0918\" (case-insensitive acceptance is OK, but store/display it uppercased). The user must not be able to proceed/\"Connect\" unless both validations pass, and error messages must be shown in English.",
+      "id": "feature-remove-all-user-facing-authentication-and-verification-flows-so-users-can-access-the-app-immediately-without-any-login-steps-including-ctr-id-access-code-email-password-face-authentication-and-any-internet-identity-sign-in-ui",
+      "title": "Remove all user-facing authentication and verification flows so users can access the app immediately without any login steps, including: CTR ID, access code, email/password, face authentication, and any Internet Identity sign-in UI.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-change-ctr-validation-logic-to-match-the-new-requirement-ctr-must-be-exactly-7-digits-remove-the-previous-13-character-in-format-validation-from-the-validation-helper-s-used-by-the-ctr-connect-flow",
-      "title": "Change CTR validation logic to match the new requirement: CTR must be exactly 7 digits. Remove the previous 13-character + \"IN\" format validation from the validation helper(s) used by the CTR connect flow.",
+      "id": "feature-remove-ctr-access-code-related-validation-utilities-and-any-ui-logic-that-depends-on-them-so-the-app-no-longer-enforces-ctr-id-allowlists-or-shared-access-code-allowlists",
+      "title": "Remove CTR/access-code related validation utilities and any UI logic that depends on them so the app no longer enforces CTR ID allowlists or shared access-code allowlists.",
       "reqIds": [
-        "REQ-2"
+        "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-wire-the-existing-react-query-hooks-for-ctr-connection-to-the-backend-implementation-so-the-ctr-connect-ui-can-actually-connect-and-the-app-can-correctly-detect-connected-state-after-refresh-reload",
-      "title": "Wire the existing React Query hooks for CTR connection to the backend implementation so the CTR connect UI can actually connect and the app can correctly detect connected state after refresh/reload.",
+      "id": "feature-eliminate-the-canister-connection-configuration-system-from-the-end-user-experience-by-removing-any-connection-config-initialization-banners-backend-reachability-banners-offline-mode-notices-and-any-connection-settings-panels-from-the-rendered-ui-so-the-app-does-not-present-canister-configuration-as-a-user-task",
+      "title": "Eliminate the canister/connection configuration system from the end-user experience by removing any connection/config initialization banners, backend reachability banners, offline mode notices, and any connection settings panels from the rendered UI so the app does not present canister configuration as a user task.",
       "reqIds": [
         "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-replace-the-current-simulated-scan-behavior-with-a-scan-action-that-redirects-the-user-to-whatsapp-for-indian-number-91-9541525891-with-a-prefilled-message-that-includes-exactly-1-get-nfc-code-of-4-digits-and-2-code-works-only-ctth-and-3-only-per-ctr-registered-user-use-an-https-wa-me-link-or-equivalent-whatsapp-deep-link-and-url-encode-the-message",
-      "title": "Replace the current simulated scan behavior with a \"Scan\" action that redirects the user to WhatsApp for Indian number +91 9541525891 with a prefilled message that includes exactly: (1) \"Get NFC code of 4 digits\" and (2) \"Code works only: CTTH\" and (3) \"Only per CTR Registered user\". Use an https://wa.me/ link (or equivalent WhatsApp deep link) and URL-encode the message.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-scan-redirect-is-only-available-to-ctr-registered-users-if-a-user-is-not-connected-registered-prevent-the-whatsapp-redirect-and-show-an-english-error-prompt-instructing-them-to-connect-register-their-ctr-first",
-      "title": "Ensure scan/redirect is only available to CTR-registered users: if a user is not connected/registered, prevent the WhatsApp redirect and show an English error prompt instructing them to connect/register their CTR first.",
-      "reqIds": [
-        "REQ-6"
       ],
       "version": 1
     }
@@ -53,32 +37,34 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Enforce CTR input requirements: CTR must be 7 digits and user must enter code 'IQL0918'",
+      "summary": "Remove all authentication methods (CTR, access code, email/password, face authentication) so users can access the app directly.",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Implement Scan option that redirects to WhatsApp (+91 9541525891) with a prefilled message requesting a 4-digit NFC code",
+      "summary": "Remove the canister system permanently from the app.",
       "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-3",
-      "summary": "Restrict NFC code flow: code works only for CTTH and only for CTR-registered users",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Implement backend support for CTR registration so that the system can enforce \"Only per CTR Registered user\": add backend methods to (1) connect/register a CTR for the calling principal and (2) query whether the caller is already connected/registered. Enforce that a principal can only register one CTR, and that the same CTR cannot be registered by multiple principals.",
+      "id": "AR-4",
+      "summary": "Remove any feature gating or conditional navigation that depends on authentication, identity state, CTR connection, access code validation, or connection state, and ensure all primary sections (Stocks & Funds, Withdrawal, Customer Support) are accessible immediately on app load.",
       "reqIds": [
-        "REQ-3"
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Remove backend-side authorization requirements so all backend methods used by the app work for anonymous callers, and preserve compatibility with the existing frontend actor creation by keeping any previously-exposed initialization method as a no-op if it is still referenced by generated interfaces.",
+      "reqIds": [
+        "REQ-5"
       ],
       "status": "pending"
     }
   ],
-  "projectName": "Enforce 7-digit CTR + access code, and redirect Scan to WhatsApp with prefilled NFC request",
+  "projectName": "Remove all authentication flows and eliminate canister/connection system so the app opens directly",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

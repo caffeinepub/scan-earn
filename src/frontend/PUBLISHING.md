@@ -1,26 +1,14 @@
-# Publishing Scan & Earn to the Internet Computer
+# Publishing Your Application
 
-This guide explains how to build and deploy the Scan & Earn application to the Internet Computer (IC).
+This guide covers deploying your application to the Internet Computer mainnet.
 
 ## Prerequisites
 
-Before deploying, ensure you have the following installed:
+- [DFX](https://internetcomputer.org/docs/current/developer-docs/setup/install/) installed
+- Cycles wallet with sufficient cycles (you can get free cycles from the [cycles faucet](https://internetcomputer.org/docs/current/developer-docs/setup/cycles/cycles-faucet))
+- Your application tested locally
 
-1. **DFX (Internet Computer SDK)** - Version 0.15.0 or later
-   ```bash
-   sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
-   ```
+## Deployment Steps
 
-2. **Node.js** - Version 18 or later
-   ```bash
-   node --version
-   ```
-
-3. **Cycles** - You'll need cycles to deploy to the mainnet. You can get cycles from:
-   - [Cycles Faucet](https://faucet.dfinity.org/) (for testing)
-   - [NNS Dapp](https://nns.ic0.app/) (convert ICP to cycles)
-
-## Local Deployment (Testing)
-
-### 1. Start the local Internet Computer replica
+### 1. Build for Production
 

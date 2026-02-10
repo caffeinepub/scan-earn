@@ -1,20 +1,22 @@
 import { create } from 'zustand';
 
+type ActiveSection = 'stocksFunds' | 'withdrawal' | 'support';
+
 interface FlowState {
-  isCtrConnected: boolean;
-  ctrId: string;
   selectedTier: { inr: number; coins: number } | null;
-  setCtrConnected: (connected: boolean, ctrId?: string) => void;
+  activeSection: ActiveSection;
   setSelectedTier: (tier: { inr: number; coins: number } | null) => void;
+  setActiveSection: (section: ActiveSection) => void;
   reset: () => void;
 }
 
 export const useFlowStore = create<FlowState>((set) => ({
-  isCtrConnected: false,
-  ctrId: '',
   selectedTier: null,
-  setCtrConnected: (connected, ctrId = '') => 
-    set({ isCtrConnected: connected, ctrId }),
+  activeSection: 'stocksFunds',
   setSelectedTier: (tier) => set({ selectedTier: tier }),
-  reset: () => set({ isCtrConnected: false, ctrId: '', selectedTier: null }),
+  setActiveSection: (section) => set({ activeSection: section }),
+  reset: () => set({ 
+    selectedTier: null, 
+    activeSection: 'stocksFunds',
+  }),
 }));

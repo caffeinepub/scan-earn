@@ -10,25 +10,32 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Transaction {
+  'transactionType' : TransactionType,
+  'user' : Principal,
+  'amount' : bigint,
+  'transactionId' : string,
+}
+export type TransactionType = { 'addFunds' : null } |
+  { 'withdrawal' : null };
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addFunds' : ActorMethod<[string, bigint], boolean>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'deleteCanister' : ActorMethod<[Principal], undefined>,
-  'getAllCanisters' : ActorMethod<[], Array<[Principal, string]>>,
+  'getAddFundsHistory' : ActorMethod<[], Array<Transaction>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
-  'getCanister' : ActorMethod<[Principal], [] | [string]>,
+  'getCoinBalance' : ActorMethod<[], bigint>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
-  'isCTRRegistered' : ActorMethod<[], boolean>,
+  'getWithdrawalHistory' : ActorMethod<[], Array<Transaction>>,
+  'isAvailableForAnonymous' : ActorMethod<[], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
-  'registerCTR' : ActorMethod<[Principal], undefined>,
-  'registerCanister' : ActorMethod<[Principal, string], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
-  'updateCanisterName' : ActorMethod<[Principal, string], undefined>,
+  'withdraw' : ActorMethod<[string, bigint], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

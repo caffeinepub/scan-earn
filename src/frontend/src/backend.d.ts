@@ -10,23 +10,32 @@ export type Option<T> = Some<T> | None;
 export interface UserProfile {
     name: string;
 }
+export interface Transaction {
+    transactionType: TransactionType;
+    user: Principal;
+    amount: bigint;
+    transactionId: string;
+}
+export enum TransactionType {
+    addFunds = "addFunds",
+    withdrawal = "withdrawal"
+}
 export enum UserRole {
     admin = "admin",
     user = "user",
     guest = "guest"
 }
 export interface backendInterface {
+    addFunds(transactionId: string, tierCoins: bigint): Promise<boolean>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
-    deleteCanister(id: Principal): Promise<void>;
-    getAllCanisters(): Promise<Array<[Principal, string]>>;
+    getAddFundsHistory(): Promise<Array<Transaction>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
-    getCanister(id: Principal): Promise<string | null>;
+    getCoinBalance(): Promise<bigint>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
-    isCTRRegistered(): Promise<boolean>;
+    getWithdrawalHistory(): Promise<Array<Transaction>>;
+    isAvailableForAnonymous(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
-    registerCTR(ctr: Principal): Promise<void>;
-    registerCanister(id: Principal, name: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    updateCanisterName(id: Principal, newName: string): Promise<void>;
+    withdraw(transactionId: string, amount: bigint): Promise<void>;
 }

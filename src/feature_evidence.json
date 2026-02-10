@@ -2,10 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-ctr-connect-flow-ui-to-require-a-a-ctr-value-that-is-exactly-7-digits-and-b-an-access-code-that-must-equal-iql0918-case-insensitive-acceptance-is-ok-but-store-display-it-uppercased-the-user-must-not-be-able-to-proceed-connect-unless-both-validations-pass-and-error-messages-must-be-shown-in-english",
-      "featureTitle": "Update the CTR connect flow UI to require (a) a CTR value that is exactly 7 digits and (b) an access code that must equal \"IQL0918\" (case-insensitive acceptance is OK, but store/display it uppercased). The user must not be able to proceed/\"Connect\" unless both validations pass, and error messages must be shown in English.",
+      "featureId": "feature-remove-all-user-facing-authentication-and-verification-flows-so-users-can-access-the-app-immediately-without-any-login-steps-including-ctr-id-access-code-email-password-face-authentication-and-any-internet-identity-sign-in-ui",
+      "featureTitle": "Remove all user-facing authentication and verification flows so users can access the app immediately without any login steps, including: CTR ID, access code, email/password, face authentication, and any Internet Identity sign-in UI.",
       "files": [
-        "frontend/src/components/scan-earn/CtrConnect.tsx"
+        "frontend/src/components/header/HeaderAuthStatus.tsx",
+        "frontend/src/components/scan-earn/CtrConnect.tsx",
+        "frontend/src/components/scan-earn/FaceVerification.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -13,7 +15,8 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "camera@1.0.0"
       ],
       "testIds": [
         "REQ-1"
@@ -21,8 +24,8 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-change-ctr-validation-logic-to-match-the-new-requirement-ctr-must-be-exactly-7-digits-remove-the-previous-13-character-in-format-validation-from-the-validation-helper-s-used-by-the-ctr-connect-flow",
-      "featureTitle": "Change CTR validation logic to match the new requirement: CTR must be exactly 7 digits. Remove the previous 13-character + \"IN\" format validation from the validation helper(s) used by the CTR connect flow.",
+      "featureId": "feature-remove-ctr-access-code-related-validation-utilities-and-any-ui-logic-that-depends-on-them-so-the-app-no-longer-enforces-ctr-id-allowlists-or-shared-access-code-allowlists",
+      "featureTitle": "Remove CTR/access-code related validation utilities and any UI logic that depends on them so the app no longer enforces CTR ID allowlists or shared access-code allowlists.",
       "files": [
         "frontend/src/lib/format.ts"
       ],
@@ -32,19 +35,24 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-2"
+        "REQ-3"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-wire-the-existing-react-query-hooks-for-ctr-connection-to-the-backend-implementation-so-the-ctr-connect-ui-can-actually-connect-and-the-app-can-correctly-detect-connected-state-after-refresh-reload",
-      "featureTitle": "Wire the existing React Query hooks for CTR connection to the backend implementation so the CTR connect UI can actually connect and the app can correctly detect connected state after refresh/reload.",
+      "featureId": "feature-eliminate-the-canister-connection-configuration-system-from-the-end-user-experience-by-removing-any-connection-config-initialization-banners-backend-reachability-banners-offline-mode-notices-and-any-connection-settings-panels-from-the-rendered-ui-so-the-app-does-not-present-canister-configuration-as-a-user-task",
+      "featureTitle": "Eliminate the canister/connection configuration system from the end-user experience by removing any connection/config initialization banners, backend reachability banners, offline mode notices, and any connection settings panels from the rendered UI so the app does not present canister configuration as a user task.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/connection/BackendConfigurationBanner.tsx",
+        "frontend/src/components/connection/BackendReachabilityBanner.tsx",
+        "frontend/src/components/connection/ConfigInitializationBanner.tsx",
+        "frontend/src/components/connection/OfflineModeNotice.tsx",
+        "frontend/src/components/scan-earn/ConnectionCanisterSettingsPanel.tsx",
+        "frontend/src/config/icEnv.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -52,50 +60,11 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "camera@1.0.0"
       ],
       "testIds": [
         "REQ-4"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-replace-the-current-simulated-scan-behavior-with-a-scan-action-that-redirects-the-user-to-whatsapp-for-indian-number-91-9541525891-with-a-prefilled-message-that-includes-exactly-1-get-nfc-code-of-4-digits-and-2-code-works-only-ctth-and-3-only-per-ctr-registered-user-use-an-https-wa-me-link-or-equivalent-whatsapp-deep-link-and-url-encode-the-message",
-      "featureTitle": "Replace the current simulated scan behavior with a \"Scan\" action that redirects the user to WhatsApp for Indian number +91 9541525891 with a prefilled message that includes exactly: (1) \"Get NFC code of 4 digits\" and (2) \"Code works only: CTTH\" and (3) \"Only per CTR Registered user\". Use an https://wa.me/ link (or equivalent WhatsApp deep link) and URL-encode the message.",
-      "files": [
-        "frontend/src/components/scan-earn/ScanRewards.tsx",
-        "frontend/src/utils/whatsapp.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-scan-redirect-is-only-available-to-ctr-registered-users-if-a-user-is-not-connected-registered-prevent-the-whatsapp-redirect-and-show-an-english-error-prompt-instructing-them-to-connect-register-their-ctr-first",
-      "featureTitle": "Ensure scan/redirect is only available to CTR-registered users: if a user is not connected/registered, prevent the WhatsApp redirect and show an English error prompt instructing them to connect/register their CTR first.",
-      "files": [
-        "frontend/src/components/scan-earn/CtrConnect.tsx",
-        "frontend/src/components/scan-earn/ScanRewards.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
       ],
       "confidence": "high"
     }

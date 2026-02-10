@@ -1,10 +1,9 @@
-import { useCoinBalance } from '../../hooks/useQueries';
+import { useGetCoinBalance } from '../../hooks/useQueries';
 import { useCountUp } from '../../hooks/useCountUp';
 import { formatCoins } from '../../lib/format';
-import { Coins } from 'lucide-react';
 
 export function CoinCounter() {
-  const { data: balance } = useCoinBalance();
+  const { data: balance } = useGetCoinBalance();
   const targetBalance = Number(balance || BigInt(0));
   const displayBalance = useCountUp(targetBalance, 1200);
 
@@ -25,4 +24,3 @@ export function CoinCounter() {
     </div>
   );
 }
-

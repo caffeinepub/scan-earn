@@ -1,29 +1,47 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-09T07:57:17.706Z",
+  "generatedAt": "2026-02-10T07:26:58.093Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 6,
-    "implemented": 5,
+    "total": 5,
+    "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Update the CTR connect flow UI to require (a) a CTR value that is exactly 7 digits and (b) an access code that must equal \"IQL0918\" (case-insensitive acceptance is OK, but store/display it uppercased). The user must not be able to proceed/\"Connect\" unless both validations pass, and error messages must be shown in English.",
+        "summary": "Remove all user-facing authentication and verification flows so users can access the app immediately without any login steps, including: CTR ID, access code, email/password, face authentication, and any Internet Identity sign-in UI.",
         "status": "implemented",
         "plannedFiles": [
+          "frontend/src/components/header/HeaderAuthStatus.tsx",
+          "frontend/src/components/scan-earn/FaceVerification.tsx",
+          "frontend/src/components/auth/EmailPasswordSignInForm.tsx",
+          "frontend/src/components/auth/SignInOptions.tsx",
+          "frontend/src/components/auth/ThirdPartyAuthUnavailableDialog.tsx",
           "frontend/src/components/scan-earn/CtrConnect.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/components/header/HeaderAuthStatus.tsx",
+          "frontend/src/components/scan-earn/FaceVerification.tsx",
           "frontend/src/components/scan-earn/CtrConnect.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Change CTR validation logic to match the new requirement: CTR must be exactly 7 digits. Remove the previous 13-character + \"IN\" format validation from the validation helper(s) used by the CTR connect flow.",
+        "summary": "Remove any feature gating or conditional navigation that depends on authentication, identity state, CTR connection, access code validation, or connection state, and ensure all primary sections (Stocks & Funds, Withdrawal, Customer Support) are accessible immediately on app load.",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/nav/HamburgerMenu.tsx",
+          "frontend/src/components/sections/LoginConnectionSection.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Remove CTR/access-code related validation utilities and any UI logic that depends on them so the app no longer enforces CTR ID allowlists or shared access-code allowlists.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/lib/format.ts"
@@ -33,52 +51,32 @@
         ]
       },
       {
-        "id": "REQ-3",
-        "summary": "Implement backend support for CTR registration so that the system can enforce \"Only per CTR Registered user\": add backend methods to (1) connect/register a CTR for the calling principal and (2) query whether the caller is already connected/registered. Enforce that a principal can only register one CTR, and that the same CTR cannot be registered by multiple principals.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
         "id": "REQ-4",
-        "summary": "Wire the existing React Query hooks for CTR connection to the backend implementation so the CTR connect UI can actually connect and the app can correctly detect connected state after refresh/reload.",
+        "summary": "Eliminate the canister/connection configuration system from the end-user experience by removing any connection/config initialization banners, backend reachability banners, offline mode notices, and any connection settings panels from the rendered UI so the app does not present canister configuration as a user task.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/App.tsx",
-          "frontend/src/backend.d.ts"
+          "frontend/src/components/connection/BackendConfigurationBanner.tsx",
+          "frontend/src/components/connection/BackendReachabilityBanner.tsx",
+          "frontend/src/components/connection/ConfigInitializationBanner.tsx",
+          "frontend/src/components/connection/OfflineModeNotice.tsx",
+          "frontend/src/components/scan-earn/ConnectionCanisterSettingsPanel.tsx",
+          "frontend/src/config/icEnv.ts"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/App.tsx",
-          "frontend/src/backend.d.ts"
+          "frontend/src/components/connection/BackendConfigurationBanner.tsx",
+          "frontend/src/components/connection/BackendReachabilityBanner.tsx",
+          "frontend/src/components/connection/ConfigInitializationBanner.tsx",
+          "frontend/src/components/connection/OfflineModeNotice.tsx",
+          "frontend/src/components/scan-earn/ConnectionCanisterSettingsPanel.tsx",
+          "frontend/src/config/icEnv.ts"
         ]
       },
       {
         "id": "REQ-5",
-        "summary": "Replace the current simulated scan behavior with a \"Scan\" action that redirects the user to WhatsApp for Indian number +91 9541525891 with a prefilled message that includes exactly: (1) \"Get NFC code of 4 digits\" and (2) \"Code works only: CTTH\" and (3) \"Only per CTR Registered user\". Use an https://wa.me/ link (or equivalent WhatsApp deep link) and URL-encode the message.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/scan-earn/ScanRewards.tsx",
-          "frontend/src/utils/whatsapp.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/scan-earn/ScanRewards.tsx",
-          "frontend/src/utils/whatsapp.ts"
-        ]
-      },
-      {
-        "id": "REQ-6",
-        "summary": "Ensure scan/redirect is only available to CTR-registered users: if a user is not connected/registered, prevent the WhatsApp redirect and show an English error prompt instructing them to connect/register their CTR first.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/scan-earn/ScanRewards.tsx",
-          "frontend/src/components/scan-earn/CtrConnect.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/scan-earn/ScanRewards.tsx",
-          "frontend/src/components/scan-earn/CtrConnect.tsx"
-        ]
+        "summary": "Remove backend-side authorization requirements so all backend methods used by the app work for anonymous callers, and preserve compatibility with the existing frontend actor creation by keeping any previously-exposed initialization method as a no-op if it is still referenced by generated interfaces.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       }
     ]
   },
@@ -88,16 +86,16 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
+    "frontend/src/components/connection/BackendConfigurationBanner.tsx",
+    "frontend/src/components/connection/BackendReachabilityBanner.tsx",
+    "frontend/src/components/connection/ConfigInitializationBanner.tsx",
+    "frontend/src/components/connection/OfflineModeNotice.tsx",
+    "frontend/src/components/header/HeaderAuthStatus.tsx",
+    "frontend/src/components/scan-earn/ConnectionCanisterSettingsPanel.tsx",
     "frontend/src/components/scan-earn/CtrConnect.tsx",
-    "frontend/src/components/scan-earn/ScanRewards.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/components/scan-earn/FaceVerification.tsx",
+    "frontend/src/config/icEnv.ts",
     "frontend/src/lib/format.ts",
-    "frontend/src/utils/whatsapp.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

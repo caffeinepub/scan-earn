@@ -1,8 +1,5 @@
-export { Hero } from './Hero';
-export { CoinCounter } from './CoinCounter';
-export { CtrConnect } from './CtrConnect';
 export { RewardCalculator } from './RewardCalculator';
 export { Wallet } from './Wallet';
-export { AddFundsModal } from './AddFundsModal';
-export { ScanRewards } from './ScanRewards';
+export { CoinCounter } from './CoinCounter';
 export { WithdrawalPanel } from './WithdrawalPanel';
+export { AddFundsModal } from './AddFundsModal';

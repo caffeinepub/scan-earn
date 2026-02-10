@@ -1,78 +1,59 @@
-import { useRef, useEffect } from 'react';
-import { Hero } from './components/scan-earn/Hero';
-import { CtrConnect } from './components/scan-earn/CtrConnect';
-import { RewardCalculator } from './components/scan-earn/RewardCalculator';
-import { Wallet } from './components/scan-earn/Wallet';
-import { ScanRewards } from './components/scan-earn/ScanRewards';
+import { StocksFundsSection } from './components/sections/StocksFundsSection';
+import { WithdrawalSection } from './components/sections/WithdrawalSection';
+import { CustomerSupportSection } from './components/sections/CustomerSupportSection';
+import { HamburgerMenu } from './components/nav/HamburgerMenu';
+import { HeaderBalanceIndicator } from './components/header/HeaderBalanceIndicator';
 import { useFlowStore } from './state/flowStore';
-import { useIsUserConnected } from './hooks/useQueries';
-import { Toaster } from './components/ui/sonner';
 
 function App() {
-  const ctrConnectRef = useRef<HTMLDivElement>(null);
-  const rewardCalculatorRef = useRef<HTMLDivElement>(null);
-  const walletRef = useRef<HTMLDivElement>(null);
-  const scanRewardsRef = useRef<HTMLDivElement>(null);
-
-  const { isCtrConnected, setCtrConnected } = useFlowStore();
-  const { data: isConnected, isLoading } = useIsUserConnected();
-
-  // Sync backend connection state with Zustand store on mount/refresh
-  useEffect(() => {
-    if (!isLoading && isConnected !== undefined) {
-      if (isConnected && !isCtrConnected) {
-        setCtrConnected(true);
-      }
-    }
-  }, [isConnected, isLoading, isCtrConnected, setCtrConnected]);
-
-  const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>) => {
-    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+  const { activeSection } = useFlowStore();
 
   return (
-    <div className="dark min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
-      <Hero onScanNowClick={() => scrollToSection(scanRewardsRef)} />
-      
-      <main className="container mx-auto px-4 py-20 space-y-24 max-w-6xl">
-        <section ref={ctrConnectRef} id="connect" className="animate-slide-up">
-          <CtrConnect onSuccess={() => scrollToSection(rewardCalculatorRef)} />
-        </section>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Header */}
+      <header className="glass border-b border-border/40 sticky top-0 z-40">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <HamburgerMenu />
+            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              Scan & Earn
+            </h1>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <HeaderBalanceIndicator />
+          </div>
+        </div>
+      </header>
 
-        {isCtrConnected && (
-          <>
-            <section ref={rewardCalculatorRef} id="tiers" className="animate-slide-up">
-              <RewardCalculator />
-            </section>
-
-            <section ref={walletRef} id="wallet" className="animate-slide-up">
-              <Wallet />
-            </section>
-
-            <section ref={scanRewardsRef} id="scan" className="animate-slide-up">
-              <ScanRewards />
-            </section>
-          </>
-        )}
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {activeSection === 'stocksFunds' && <StocksFundsSection />}
+        {activeSection === 'withdrawal' && <WithdrawalSection />}
+        {activeSection === 'support' && <CustomerSupportSection />}
       </main>
 
-      <footer className="border-t border-border/40 mt-32 py-10 backdrop-blur-sm">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p className="font-medium">
-            © 2026. Built with <span className="text-red-500">♥</span> using{' '}
-            <a 
-              href="https://caffeine.ai" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-electric-blue hover:underline transition-colors font-semibold"
-            >
-              caffeine.ai
-            </a>
-          </p>
+      {/* Footer */}
+      <footer className="glass border-t border-border/40 mt-16">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+            <p>© {new Date().getFullYear()} Scan & Earn. All rights reserved.</p>
+            <p>
+              Built with ❤️ using{' '}
+              <a
+                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
+                  typeof window !== 'undefined' ? window.location.hostname : 'scan-earn-app'
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground transition-colors underline"
+              >
+                caffeine.ai
+              </a>
+            </p>
+          </div>
         </div>
       </footer>
-
-      <Toaster />
     </div>
   );
 }

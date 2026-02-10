@@ -1,206 +1,128 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import { Principal } from '@dfinity/principal';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useActorResilient } from './useActorResilient';
+import type { UserProfile, Transaction } from '../backend';
+import { parseICError } from '../lib/icErrorParser';
 
-// Local type definitions for missing backend types
-// TODO: These should be moved to backend once implemented
-export interface BankAccount {
-  accountHolderName: string;
-  bankName: string;
-  accountNumber: string;
-  ifsc: string;
-}
+// User Profile Queries
+export function useGetCallerUserProfile() {
+  const { actor, isFetching: actorFetching } = useActorResilient();
 
-export interface WithdrawalRequest {
-  amountRequested: bigint;
-  fee: bigint;
-  timestamp: bigint;
-  status: 'pending' | 'completed' | 'rejected';
-}
-
-export interface RewardTier {
-  inr: number;
-  coins: number;
-}
-
-export const queryKeys = {
-  isConnected: ['user', 'connected'],
-  coinBalance: ['user', 'coinBalance'],
-  bankAccount: ['user', 'bankAccount'],
-  rewardTiers: ['rewardTiers'],
-  transactionHistory: ['user', 'transactionHistory'],
-  withdrawalRequests: ['user', 'withdrawalRequests'],
-};
-
-// Check if user has registered a CTR
-export function useIsUserConnected() {
-  const { actor, isFetching } = useActor();
-
-  return useQuery({
-    queryKey: queryKeys.isConnected,
+  const query = useQuery<UserProfile | null>({
+    queryKey: ['currentUserProfile'],
     queryFn: async () => {
-      if (!actor) return false;
-      return actor.isCTRRegistered();
+      if (!actor) throw new Error('Actor not available');
+      return actor.getCallerUserProfile();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching,
+    retry: false,
   });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
 }
 
-// Connect/register a CTR ID
-export function useConnectCtrId() {
-  const { actor } = useActor();
+export function useSaveCallerUserProfile() {
+  const { actor } = useActorResilient();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (ctrId: string) => {
-      if (!actor) throw new Error('Actor not initialized');
-      // Convert the 7-digit CTR ID string to a Principal
-      // For demo purposes, we'll create a principal from the CTR ID
-      const ctrPrincipal = Principal.fromText(
-        Principal.anonymous().toText()
-      );
-      await actor.registerCTR(ctrPrincipal);
+    mutationFn: async (profile: UserProfile) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.saveCallerUserProfile(profile);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.isConnected });
-      queryClient.invalidateQueries({ queryKey: queryKeys.coinBalance });
-      queryClient.invalidateQueries({ queryKey: queryKeys.bankAccount });
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+    },
+    onError: (error) => {
+      const parsed = parseICError(error);
+      throw new Error(parsed.message);
     },
   });
 }
 
-// Stub implementation - returns 0 until backend is implemented
-export function useCoinBalance() {
-  const { actor, isFetching } = useActor();
+// Coin Balance Query
+export function useGetCoinBalance() {
+  const { actor, isFetching: actorFetching } = useActorResilient();
 
-  return useQuery({
-    queryKey: queryKeys.coinBalance,
+  return useQuery<bigint>({
+    queryKey: ['coinBalance'],
     queryFn: async () => {
-      if (!actor) return BigInt(0);
-      // TODO: Backend method not implemented yet
-      // return actor.getCoinBalance();
-      return BigInt(0);
+      if (!actor) throw new Error('Actor not available');
+      return actor.getCoinBalance();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching,
+    refetchInterval: 10000,
   });
 }
 
-// Stub implementation - returns empty array until backend is implemented
-export function useRewardTiers() {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<RewardTier[]>({
-    queryKey: queryKeys.rewardTiers,
-    queryFn: async () => {
-      if (!actor) return [];
-      // TODO: Backend method not implemented yet
-      // return actor.getRewardTiers();
-      return [
-        { inr: 100, coins: 1000 },
-        { inr: 500, coins: 5500 },
-        { inr: 1000, coins: 12000 },
-        { inr: 2000, coins: 25000 },
-      ];
-    },
-    enabled: !!actor && !isFetching,
-  });
-}
-
-// Stub implementation - returns null until backend is implemented
-export function useBankAccount() {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<BankAccount | null>({
-    queryKey: queryKeys.bankAccount,
-    queryFn: async () => {
-      if (!actor) return null;
-      // TODO: Backend method not implemented yet
-      // return actor.getBankAccount();
-      return null;
-    },
-    enabled: !!actor && !isFetching,
-  });
-}
-
-// Stub implementation - throws error until backend is implemented
-export function useAddBankAccount() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (data: {
-      accountHolderName: string;
-      bankName: string;
-      accountNumber: string;
-      ifsc: string;
-    }) => {
-      if (!actor) throw new Error('Actor not initialized');
-      // TODO: Backend method not implemented yet
-      // await actor.addBankAccount(
-      //   data.accountHolderName,
-      //   data.bankName,
-      //   data.accountNumber,
-      //   data.ifsc
-      // );
-      throw new Error('Backend method addBankAccount not implemented yet');
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.bankAccount });
-    },
-  });
-}
-
-// Stub implementation - throws error until backend is implemented
+// Add Funds Mutation
 export function useAddFunds() {
-  const { actor } = useActor();
+  const { actor } = useActorResilient();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { transactionId: string; tierCoins: number }) => {
-      if (!actor) throw new Error('Actor not initialized');
-      // TODO: Backend method not implemented yet
-      // await actor.addFunds(data.transactionId, BigInt(data.tierCoins));
-      throw new Error('Backend method addFunds not implemented yet');
+    mutationFn: async ({ transactionId, coins }: { transactionId: string; coins: bigint }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.addFunds(transactionId, coins);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.coinBalance });
-      queryClient.invalidateQueries({ queryKey: queryKeys.transactionHistory });
+      queryClient.invalidateQueries({ queryKey: ['coinBalance'] });
+      queryClient.invalidateQueries({ queryKey: ['addFundsHistory'] });
+    },
+    onError: (error) => {
+      const parsed = parseICError(error);
+      throw new Error(parsed.message);
     },
   });
 }
 
-// Stub implementation - throws error until backend is implemented
-export function useRequestWithdrawal() {
-  const { actor } = useActor();
+// Withdraw Mutation
+export function useWithdraw() {
+  const { actor } = useActorResilient();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (amount: number) => {
-      if (!actor) throw new Error('Actor not initialized');
-      // TODO: Backend method not implemented yet
-      // const result = await actor.requestWithdrawal(BigInt(amount));
-      // return result;
-      throw new Error('Backend method requestWithdrawal not implemented yet');
+    mutationFn: async ({ transactionId, amount }: { transactionId: string; amount: bigint }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.withdraw(transactionId, amount);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.coinBalance });
-      queryClient.invalidateQueries({ queryKey: queryKeys.withdrawalRequests });
+      queryClient.invalidateQueries({ queryKey: ['coinBalance'] });
+      queryClient.invalidateQueries({ queryKey: ['withdrawalHistory'] });
+    },
+    onError: (error) => {
+      const parsed = parseICError(error);
+      throw new Error(parsed.message);
     },
   });
 }
 
-// Stub implementation - returns empty array until backend is implemented
-export function useWithdrawalRequests() {
-  const { actor, isFetching } = useActor();
+// Transaction History Queries
+export function useGetAddFundsHistory() {
+  const { actor, isFetching: actorFetching } = useActorResilient();
 
-  return useQuery<Array<[bigint, WithdrawalRequest]>>({
-    queryKey: queryKeys.withdrawalRequests,
+  return useQuery<Transaction[]>({
+    queryKey: ['addFundsHistory'],
     queryFn: async () => {
-      if (!actor) return [];
-      // TODO: Backend method not implemented yet
-      // return actor.getWithdrawalRequests();
-      return [];
+      if (!actor) throw new Error('Actor not available');
+      return actor.getAddFundsHistory();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching,
+  });
+}
+
+export function useGetWithdrawalHistory() {
+  const { actor, isFetching: actorFetching } = useActorResilient();
+
+  return useQuery<Transaction[]>({
+    queryKey: ['withdrawalHistory'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.getWithdrawalHistory();
+    },
+    enabled: !!actor && !actorFetching,
   });
 }
