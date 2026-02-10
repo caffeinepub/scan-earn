@@ -8,6 +8,47 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const _CaffeineStorageCreateCertificateResult = IDL.Record({
+  'method' : IDL.Text,
+  'blob_hash' : IDL.Text,
+});
+export const _CaffeineStorageRefillInformation = IDL.Record({
+  'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const _CaffeineStorageRefillResult = IDL.Record({
+  'success' : IDL.Opt(IDL.Bool),
+  'topped_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const ExternalBlob = IDL.Vec(IDL.Nat8);
+export const PaymentStatus = IDL.Variant({
+  'pending' : IDL.Null,
+  'approved' : IDL.Null,
+  'declined' : IDL.Null,
+});
+export const PaymentRequest = IDL.Record({
+  'status' : PaymentStatus,
+  'receipt' : IDL.Opt(ExternalBlob),
+  'flagReason' : IDL.Opt(IDL.Text),
+  'user' : IDL.Principal,
+  'submittedAt' : IDL.Int,
+  'utrId' : IDL.Opt(IDL.Text),
+  'amount' : IDL.Nat,
+  'flagged' : IDL.Bool,
+  'transactionId' : IDL.Text,
+});
+export const Message = IDL.Record({
+  'id' : IDL.Nat,
+  'content' : IDL.Text,
+  'sender' : IDL.Principal,
+  'timestamp' : IDL.Int,
+  'receiver' : IDL.Principal,
+  'isAdminReply' : IDL.Bool,
+});
+export const UserMessageThread = IDL.Record({
+  'lastMessageTime' : IDL.Int,
+  'messages' : IDL.Vec(Message),
+  'user' : IDL.Principal,
+});
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
   'user' : IDL.Null,
@@ -26,13 +67,76 @@ export const Transaction = IDL.Record({
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
+  '_caffeineStorageBlobIsLive' : IDL.Func(
+      [IDL.Vec(IDL.Nat8)],
+      [IDL.Bool],
+      ['query'],
+    ),
+  '_caffeineStorageBlobsToDelete' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      ['query'],
+    ),
+  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      [],
+      [],
+    ),
+  '_caffeineStorageCreateCertificate' : IDL.Func(
+      [IDL.Text],
+      [_CaffeineStorageCreateCertificateResult],
+      [],
+    ),
+  '_caffeineStorageRefillCashier' : IDL.Func(
+      [IDL.Opt(_CaffeineStorageRefillInformation)],
+      [_CaffeineStorageRefillResult],
+      [],
+    ),
+  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-  'addFunds' : IDL.Func([IDL.Text, IDL.Nat], [IDL.Bool], []),
+  'addFunds' : IDL.Func(
+      [IDL.Text, IDL.Nat, IDL.Opt(IDL.Text), IDL.Opt(ExternalBlob)],
+      [IDL.Bool],
+      [],
+    ),
+  'adminApprovePayment' : IDL.Func([IDL.Text], [], []),
+  'adminDeclinePayment' : IDL.Func([IDL.Text], [], []),
+  'adminGetAllPaymentRequests' : IDL.Func(
+      [],
+      [IDL.Vec(PaymentRequest)],
+      ['query'],
+    ),
+  'adminGetAllUserMessages' : IDL.Func(
+      [],
+      [IDL.Vec(UserMessageThread)],
+      ['query'],
+    ),
+  'adminGetAllUsers' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+  'adminGetBlockedUsers' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+  'adminGetFlaggedPayments' : IDL.Func(
+      [],
+      [IDL.Vec(PaymentRequest)],
+      ['query'],
+    ),
+  'adminGetPendingPayments' : IDL.Func(
+      [],
+      [IDL.Vec(PaymentRequest)],
+      ['query'],
+    ),
+  'adminGetUserMessages' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(Message)],
+      ['query'],
+    ),
+  'adminIsUserBlocked' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
+  'adminReplyToUser' : IDL.Func([IDL.Principal, IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'blockUser' : IDL.Func([IDL.Principal], [], []),
   'getAddFundsHistory' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCoinBalance' : IDL.Func([], [IDL.Nat], ['query']),
+  'getMessages' : IDL.Func([], [IDL.Vec(Message)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -42,12 +146,55 @@ export const idlService = IDL.Service({
   'isAvailableForAnonymous' : IDL.Func([], [], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'sendMessage' : IDL.Func([IDL.Principal, IDL.Text], [], []),
+  'unblockUser' : IDL.Func([IDL.Principal], [], []),
   'withdraw' : IDL.Func([IDL.Text, IDL.Nat], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const _CaffeineStorageCreateCertificateResult = IDL.Record({
+    'method' : IDL.Text,
+    'blob_hash' : IDL.Text,
+  });
+  const _CaffeineStorageRefillInformation = IDL.Record({
+    'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const _CaffeineStorageRefillResult = IDL.Record({
+    'success' : IDL.Opt(IDL.Bool),
+    'topped_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const ExternalBlob = IDL.Vec(IDL.Nat8);
+  const PaymentStatus = IDL.Variant({
+    'pending' : IDL.Null,
+    'approved' : IDL.Null,
+    'declined' : IDL.Null,
+  });
+  const PaymentRequest = IDL.Record({
+    'status' : PaymentStatus,
+    'receipt' : IDL.Opt(ExternalBlob),
+    'flagReason' : IDL.Opt(IDL.Text),
+    'user' : IDL.Principal,
+    'submittedAt' : IDL.Int,
+    'utrId' : IDL.Opt(IDL.Text),
+    'amount' : IDL.Nat,
+    'flagged' : IDL.Bool,
+    'transactionId' : IDL.Text,
+  });
+  const Message = IDL.Record({
+    'id' : IDL.Nat,
+    'content' : IDL.Text,
+    'sender' : IDL.Principal,
+    'timestamp' : IDL.Int,
+    'receiver' : IDL.Principal,
+    'isAdminReply' : IDL.Bool,
+  });
+  const UserMessageThread = IDL.Record({
+    'lastMessageTime' : IDL.Int,
+    'messages' : IDL.Vec(Message),
+    'user' : IDL.Principal,
+  });
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
     'user' : IDL.Null,
@@ -66,13 +213,76 @@ export const idlFactory = ({ IDL }) => {
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
   
   return IDL.Service({
+    '_caffeineStorageBlobIsLive' : IDL.Func(
+        [IDL.Vec(IDL.Nat8)],
+        [IDL.Bool],
+        ['query'],
+      ),
+    '_caffeineStorageBlobsToDelete' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        ['query'],
+      ),
+    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        [],
+        [],
+      ),
+    '_caffeineStorageCreateCertificate' : IDL.Func(
+        [IDL.Text],
+        [_CaffeineStorageCreateCertificateResult],
+        [],
+      ),
+    '_caffeineStorageRefillCashier' : IDL.Func(
+        [IDL.Opt(_CaffeineStorageRefillInformation)],
+        [_CaffeineStorageRefillResult],
+        [],
+      ),
+    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-    'addFunds' : IDL.Func([IDL.Text, IDL.Nat], [IDL.Bool], []),
+    'addFunds' : IDL.Func(
+        [IDL.Text, IDL.Nat, IDL.Opt(IDL.Text), IDL.Opt(ExternalBlob)],
+        [IDL.Bool],
+        [],
+      ),
+    'adminApprovePayment' : IDL.Func([IDL.Text], [], []),
+    'adminDeclinePayment' : IDL.Func([IDL.Text], [], []),
+    'adminGetAllPaymentRequests' : IDL.Func(
+        [],
+        [IDL.Vec(PaymentRequest)],
+        ['query'],
+      ),
+    'adminGetAllUserMessages' : IDL.Func(
+        [],
+        [IDL.Vec(UserMessageThread)],
+        ['query'],
+      ),
+    'adminGetAllUsers' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+    'adminGetBlockedUsers' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+    'adminGetFlaggedPayments' : IDL.Func(
+        [],
+        [IDL.Vec(PaymentRequest)],
+        ['query'],
+      ),
+    'adminGetPendingPayments' : IDL.Func(
+        [],
+        [IDL.Vec(PaymentRequest)],
+        ['query'],
+      ),
+    'adminGetUserMessages' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(Message)],
+        ['query'],
+      ),
+    'adminIsUserBlocked' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
+    'adminReplyToUser' : IDL.Func([IDL.Principal, IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'blockUser' : IDL.Func([IDL.Principal], [], []),
     'getAddFundsHistory' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCoinBalance' : IDL.Func([], [IDL.Nat], ['query']),
+    'getMessages' : IDL.Func([], [IDL.Vec(Message)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -82,6 +292,8 @@ export const idlFactory = ({ IDL }) => {
     'isAvailableForAnonymous' : IDL.Func([], [], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'sendMessage' : IDL.Func([IDL.Principal, IDL.Text], [], []),
+    'unblockUser' : IDL.Func([IDL.Principal], [], []),
     'withdraw' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   });
 };

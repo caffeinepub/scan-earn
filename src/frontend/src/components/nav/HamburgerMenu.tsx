@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, TrendingUp, ArrowDownToLine, MessageCircle } from 'lucide-react';
+import { Menu, X, LayoutDashboard, ArrowDownToLine, History, Shield, Receipt } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useFlowStore } from '../../state/flowStore';
 
@@ -7,7 +7,7 @@ export function HamburgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const { activeSection, setActiveSection } = useFlowStore();
 
-  const handleNavigate = (section: 'stocksFunds' | 'withdrawal' | 'support') => {
+  const handleNavigate = (section: 'home' | 'withdrawal' | 'withdrawalHistory' | 'adminPanel' | 'fundsHistory') => {
     setActiveSection(section);
     setIsOpen(false);
   };
@@ -19,7 +19,7 @@ export function HamburgerMenu() {
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative z-50"
+        className="relative z-50 hover:bg-primary/10"
         aria-label="Toggle menu"
       >
         {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -30,14 +30,16 @@ export function HamburgerMenu() {
         <div
           className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
           onClick={() => setIsOpen(false)}
+          aria-hidden="true"
         />
       )}
 
       {/* Menu Panel */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-card border-r border-border shadow-2xl z-40 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-card border-r border-border shadow-2xl z-40 transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
+        style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -49,12 +51,12 @@ export function HamburgerMenu() {
           <nav className="flex-1 overflow-y-auto p-4">
             <div className="space-y-2">
               <Button
-                variant={activeSection === 'stocksFunds' ? 'default' : 'ghost'}
+                variant={activeSection === 'home' ? 'default' : 'ghost'}
                 className="w-full justify-start gap-3 h-12"
-                onClick={() => handleNavigate('stocksFunds')}
+                onClick={() => handleNavigate('home')}
               >
-                <TrendingUp className="h-5 w-5" />
-                <span className="text-base">Stocks & Funds</span>
+                <LayoutDashboard className="h-5 w-5" />
+                <span className="text-base">Dashboard</span>
               </Button>
 
               <Button
@@ -67,12 +69,30 @@ export function HamburgerMenu() {
               </Button>
 
               <Button
-                variant={activeSection === 'support' ? 'default' : 'ghost'}
+                variant={activeSection === 'withdrawalHistory' ? 'default' : 'ghost'}
                 className="w-full justify-start gap-3 h-12"
-                onClick={() => handleNavigate('support')}
+                onClick={() => handleNavigate('withdrawalHistory')}
               >
-                <MessageCircle className="h-5 w-5" />
-                <span className="text-base">Customer Support</span>
+                <History className="h-5 w-5" />
+                <span className="text-base">Withdrawal History</span>
+              </Button>
+
+              <Button
+                variant={activeSection === 'adminPanel' ? 'default' : 'ghost'}
+                className="w-full justify-start gap-3 h-12"
+                onClick={() => handleNavigate('adminPanel')}
+              >
+                <Shield className="h-5 w-5" />
+                <span className="text-base">Admin Panel</span>
+              </Button>
+
+              <Button
+                variant={activeSection === 'fundsHistory' ? 'default' : 'ghost'}
+                className="w-full justify-start gap-3 h-12"
+                onClick={() => handleNavigate('fundsHistory')}
+              >
+                <Receipt className="h-5 w-5" />
+                <span className="text-base">Funds Transaction History</span>
               </Button>
             </div>
           </nav>

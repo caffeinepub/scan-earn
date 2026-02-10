@@ -1,129 +1,60 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Remove all authentication and connection/canister UX so app opens directly",
+  "title": "Consolidate StocksHomePage hamburger menu to 5 dashboard-related sections",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Remove all user-facing authentication and verification UI so the app is immediately accessible without any login/verification steps.",
+      "summary": "Replace the StocksHomePage hamburger menu with a single consolidated menu that contains only the 5 specified navigation items.",
       "acceptanceCriteria": [
-        "No screen, modal, banner, or section prompts the user to enter a CTR ID or access code.",
-        "No screen, modal, banner, or section prompts the user to enter email/password.",
-        "No face verification UI is shown or required anywhere in the app.",
-        "There is no Internet Identity sign-in button or login prompt shown anywhere in the app.",
-        "User can open the app in a fresh browser session and immediately see the main app content without interacting with any authentication UI."
+        "On the main home page header, the hamburger menu opens a single menu panel.",
+        "The menu panel shows exactly 5 navigation items: \"Dashboard\", \"Withdrawal\", \"Withdrawal History\", \"Admin Panel\", and \"Funds Transaction History\".",
+        "The menu panel does not show any other items currently present (e.g., \"Stocks & Funds\", \"Winning History\", \"Customer Care\", \"Customer Support\")."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/header/HeaderAuthStatus.tsx",
+          "path": "frontend/src/components/nav/HamburgerMenu.tsx",
           "operation": "modify",
-          "description": "Remove any rendered auth-status / sign-in related UI by turning this component into a no-op (render null) and ensure it does not display Internet Identity or any login status controls."
-        },
-        {
-          "path": "frontend/src/components/scan-earn/FaceVerification.tsx",
-          "operation": "modify",
-          "description": "Eliminate face authentication UX by making this component render nothing (or a non-blocking placeholder that does not request camera/verification), ensuring no face verification UI is shown."
-        },
-        {
-          "path": "frontend/src/components/auth/EmailPasswordSignInForm.tsx",
-          "operation": "delete",
-          "description": "Remove email/password sign-in UI implementation file so it cannot be surfaced anywhere in the app."
-        },
-        {
-          "path": "frontend/src/components/auth/SignInOptions.tsx",
-          "operation": "delete",
-          "description": "Remove sign-in options UI to prevent any future login prompts from being rendered."
-        },
-        {
-          "path": "frontend/src/components/auth/ThirdPartyAuthUnavailableDialog.tsx",
-          "operation": "delete",
-          "description": "Remove third-party auth dialog UI so no auth-related dialogs can be displayed."
-        },
-        {
-          "path": "frontend/src/components/scan-earn/CtrConnect.tsx",
-          "operation": "modify",
-          "description": "Eliminate CTR connection UI by making this component a no-op (render null) and ensuring it does not prompt for CTR ID / access code."
+          "description": "Update the menu panel UI to render exactly five items (Dashboard, Withdrawal, Withdrawal History, Admin Panel, Funds Transaction History) and remove all other existing menu actions/items (including customer care/support links). Ensure only one panel is used and adjust icon imports accordingly."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Remove any auth/connection-based gating and ensure all primary sections are accessible immediately on load.",
+      "summary": "Wire the consolidated menu items to the existing flowStore activeSection mechanism so each item switches the visible section and closes the menu.",
       "acceptanceCriteria": [
-        "On initial load, the app shows a primary section (not a login/connection/auth screen).",
-        "Navigation menu contains only main sections (Stocks & Funds, Withdrawal, Customer Support) and none related to login/connection/auth/verification.",
-        "All main sections render and are usable without requiring any identity/CTR/access-code step."
+        "Clicking \"Dashboard\" sets the active section to the existing home/landing section and closes the menu.",
+        "Clicking \"Withdrawal\" sets the active section to \"withdrawal\" and closes the menu.",
+        "Clicking \"Withdrawal History\" sets the active section to \"withdrawalHistory\" and closes the menu.",
+        "Clicking \"Admin Panel\" sets the active section to \"adminPanel\" and closes the menu.",
+        "Clicking \"Funds Transaction History\" sets the active section to \"fundsHistory\" and closes the menu."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Ensure the initial render always shows main application content (Stocks & Funds / Withdrawal / Customer Support) and does not conditionally switch to any login/connection/auth screen under any state."
-        },
-        {
           "path": "frontend/src/components/nav/HamburgerMenu.tsx",
           "operation": "modify",
-          "description": "Confirm navigation contains only the three primary sections (Stocks & Funds, Withdrawal, Customer Support) and remove/avoid any auth/connection/verification items or conditional gating tied to identity/connection state."
-        },
-        {
-          "path": "frontend/src/components/sections/LoginConnectionSection.tsx",
-          "operation": "delete",
-          "description": "Remove the login/connection section file to prevent routing/rendering to any dedicated login/connection screen."
+          "description": "Map the consolidated menu labels to the existing activeSection values (Dashboard->'home', Withdrawal->'withdrawal', Withdrawal History->'withdrawalHistory', Admin Panel->'adminPanel', Funds Transaction History->'fundsHistory') using the current flowStore setActiveSection flow, and ensure the menu closes on selection."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Remove CTR/access-code validation enforcement from the UI so no allowlist checks can block access or show CTR/access-code validation errors.",
+      "summary": "Standardize funds history user-facing labels to use \"Funds Transaction History\" in the menu and the funds history section header.",
       "acceptanceCriteria": [
-        "No code path in the UI blocks access based on `validateCtrId` or `validateAccessCode` checks.",
-        "No user-facing error messages referencing CTR ID or access code validation appear during normal app usage."
+        "In the consolidated menu, the item label reads \"Funds Transaction History\" (not \"Funds History\").",
+        "In the funds history section header, the main title uses \"Funds Transaction History\" in English.",
+        "No other section titles are unintentionally changed."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/lib/format.ts",
+          "path": "frontend/src/components/nav/HamburgerMenu.tsx",
           "operation": "modify",
-          "description": "Remove CTR ID and access-code allowlist enforcement by deleting the `validateCtrId` and `validateAccessCode` validators (or converting them into permissive no-op validators that always return valid without CTR/access-code-specific error messages), ensuring the UI cannot gate access based on these checks."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Remove canister/connection configuration UX (banners, offline notices, settings panels) so users are not asked to configure canister IDs or connection state.",
-      "acceptanceCriteria": [
-        "No connection/config/offline/reachability banners or notices are displayed anywhere in the app UI.",
-        "There is no visible UI that asks the user to configure or validate a canister ID."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/connection/BackendConfigurationBanner.tsx",
-          "operation": "modify",
-          "description": "Eliminate backend configuration banner UX by making this component render null (or otherwise not render any UI), ensuring no canister configuration task is presented to users."
+          "description": "Update the funds history navigation item label to \"Funds Transaction History\" while continuing to navigate to the existing 'fundsHistory' activeSection."
         },
         {
-          "path": "frontend/src/components/connection/BackendReachabilityBanner.tsx",
+          "path": "frontend/src/components/sections/FundsHistorySection.tsx",
           "operation": "modify",
-          "description": "Eliminate backend reachability banner UX by making this component render null (or otherwise not render any UI), ensuring no reachability warnings are displayed to end users."
-        },
-        {
-          "path": "frontend/src/components/connection/ConfigInitializationBanner.tsx",
-          "operation": "modify",
-          "description": "Eliminate config initialization banner UX by making this component render null (or otherwise not render any UI), ensuring no initialization notices are displayed."
-        },
-        {
-          "path": "frontend/src/components/connection/OfflineModeNotice.tsx",
-          "operation": "modify",
-          "description": "Eliminate offline mode notice UX by making this component render null (or otherwise not render any UI), ensuring no offline notices are displayed."
-        },
-        {
-          "path": "frontend/src/components/scan-earn/ConnectionCanisterSettingsPanel.tsx",
-          "operation": "modify",
-          "description": "Remove any connection/canister settings UI by making this panel render null and ensuring it does not expose canister ID configuration to end users."
-        },
-        {
-          "path": "frontend/src/config/icEnv.ts",
-          "operation": "modify",
-          "description": "Keep canister configuration internal-only and non-interactive (no runtime user overrides); ensure this module does not support or imply any user-facing canister configuration flow."
+          "description": "Change the funds history section heading/title text from \"Funds History\" to \"Funds Transaction History\" without altering other section headings or internal activeSection names."
         }
       ]
     }

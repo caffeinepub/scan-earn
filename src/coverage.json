@@ -1,101 +1,59 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-10T07:26:58.093Z",
+  "generatedAt": "2026-02-10T17:20:47.457Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
+    "total": 3,
     "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Remove all user-facing authentication and verification flows so users can access the app immediately without any login steps, including: CTR ID, access code, email/password, face authentication, and any Internet Identity sign-in UI.",
+        "summary": "Update the main home page upper sidebar menu (the hamburger menu shown in the header on StocksHomePage) so it displays a single consolidated menu containing only these items: Dashboard, Withdrawal, Withdrawal History, Admin Panel, and Funds Transaction History.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/header/HeaderAuthStatus.tsx",
-          "frontend/src/components/scan-earn/FaceVerification.tsx",
-          "frontend/src/components/auth/EmailPasswordSignInForm.tsx",
-          "frontend/src/components/auth/SignInOptions.tsx",
-          "frontend/src/components/auth/ThirdPartyAuthUnavailableDialog.tsx",
-          "frontend/src/components/scan-earn/CtrConnect.tsx"
+          "frontend/src/components/nav/HamburgerMenu.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/header/HeaderAuthStatus.tsx",
-          "frontend/src/components/scan-earn/FaceVerification.tsx",
-          "frontend/src/components/scan-earn/CtrConnect.tsx"
+          "frontend/src/components/nav/HamburgerMenu.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Remove any feature gating or conditional navigation that depends on authentication, identity state, CTR connection, access code validation, or connection state, and ensure all primary sections (Stocks & Funds, Withdrawal, Customer Support) are accessible immediately on app load.",
-        "status": "missing",
+        "summary": "Wire the consolidated menu items to the existing section navigation state so each item switches the visible content area accordingly: Dashboard -> home section, Withdrawal -> withdrawal section, Withdrawal History -> withdrawalHistory section, Admin Panel -> adminPanel section, Funds Transaction History -> fundsHistory section.",
+        "status": "implemented",
         "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/nav/HamburgerMenu.tsx",
-          "frontend/src/components/sections/LoginConnectionSection.tsx"
+          "frontend/src/components/nav/HamburgerMenu.tsx"
         ],
-        "matchedFiles": []
+        "matchedFiles": [
+          "frontend/src/components/nav/HamburgerMenu.tsx"
+        ]
       },
       {
         "id": "REQ-3",
-        "summary": "Remove CTR/access-code related validation utilities and any UI logic that depends on them so the app no longer enforces CTR ID allowlists or shared access-code allowlists.",
+        "summary": "Update user-facing section labels/headings related to funds history so they consistently use the phrase \"Funds Transaction History\" anywhere this destination is shown from the menu and on the funds history section page header.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/lib/format.ts"
+          "frontend/src/components/nav/HamburgerMenu.tsx",
+          "frontend/src/components/sections/FundsHistorySection.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/lib/format.ts"
+          "frontend/src/components/nav/HamburgerMenu.tsx",
+          "frontend/src/components/sections/FundsHistorySection.tsx"
         ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Eliminate the canister/connection configuration system from the end-user experience by removing any connection/config initialization banners, backend reachability banners, offline mode notices, and any connection settings panels from the rendered UI so the app does not present canister configuration as a user task.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/connection/BackendConfigurationBanner.tsx",
-          "frontend/src/components/connection/BackendReachabilityBanner.tsx",
-          "frontend/src/components/connection/ConfigInitializationBanner.tsx",
-          "frontend/src/components/connection/OfflineModeNotice.tsx",
-          "frontend/src/components/scan-earn/ConnectionCanisterSettingsPanel.tsx",
-          "frontend/src/config/icEnv.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/connection/BackendConfigurationBanner.tsx",
-          "frontend/src/components/connection/BackendReachabilityBanner.tsx",
-          "frontend/src/components/connection/ConfigInitializationBanner.tsx",
-          "frontend/src/components/connection/OfflineModeNotice.tsx",
-          "frontend/src/components/scan-earn/ConnectionCanisterSettingsPanel.tsx",
-          "frontend/src/config/icEnv.ts"
-        ]
-      },
-      {
-        "id": "REQ-5",
-        "summary": "Remove backend-side authorization requirements so all backend methods used by the app work for anonymous callers, and preserve compatibility with the existing frontend actor creation by keeping any previously-exposed initialization method as a no-op if it is still referenced by generated interfaces.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/connection/BackendConfigurationBanner.tsx",
-    "frontend/src/components/connection/BackendReachabilityBanner.tsx",
-    "frontend/src/components/connection/ConfigInitializationBanner.tsx",
-    "frontend/src/components/connection/OfflineModeNotice.tsx",
-    "frontend/src/components/header/HeaderAuthStatus.tsx",
-    "frontend/src/components/scan-earn/ConnectionCanisterSettingsPanel.tsx",
-    "frontend/src/components/scan-earn/CtrConnect.tsx",
-    "frontend/src/components/scan-earn/FaceVerification.tsx",
-    "frontend/src/config/icEnv.ts",
-    "frontend/src/lib/format.ts",
+    "frontend/src/components/nav/HamburgerMenu.tsx",
+    "frontend/src/components/sections/FundsHistorySection.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

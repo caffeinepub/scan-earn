@@ -10,6 +10,29 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export type ExternalBlob = Uint8Array;
+export interface Message {
+  'id' : bigint,
+  'content' : string,
+  'sender' : Principal,
+  'timestamp' : bigint,
+  'receiver' : Principal,
+  'isAdminReply' : boolean,
+}
+export interface PaymentRequest {
+  'status' : PaymentStatus,
+  'receipt' : [] | [ExternalBlob],
+  'flagReason' : [] | [string],
+  'user' : Principal,
+  'submittedAt' : bigint,
+  'utrId' : [] | [string],
+  'amount' : bigint,
+  'flagged' : boolean,
+  'transactionId' : string,
+}
+export type PaymentStatus = { 'pending' : null } |
+  { 'approved' : null } |
+  { 'declined' : null };
 export interface Transaction {
   'transactionType' : TransactionType,
   'user' : Principal,
@@ -18,23 +41,72 @@ export interface Transaction {
 }
 export type TransactionType = { 'addFunds' : null } |
   { 'withdrawal' : null };
+export interface UserMessageThread {
+  'lastMessageTime' : bigint,
+  'messages' : Array<Message>,
+  'user' : Principal,
+}
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'addFunds' : ActorMethod<[string, bigint], boolean>,
+  'addFunds' : ActorMethod<
+    [string, bigint, [] | [string], [] | [ExternalBlob]],
+    boolean
+  >,
+  'adminApprovePayment' : ActorMethod<[string], undefined>,
+  'adminDeclinePayment' : ActorMethod<[string], undefined>,
+  'adminGetAllPaymentRequests' : ActorMethod<[], Array<PaymentRequest>>,
+  'adminGetAllUserMessages' : ActorMethod<[], Array<UserMessageThread>>,
+  'adminGetAllUsers' : ActorMethod<[], Array<Principal>>,
+  'adminGetBlockedUsers' : ActorMethod<[], Array<Principal>>,
+  'adminGetFlaggedPayments' : ActorMethod<[], Array<PaymentRequest>>,
+  'adminGetPendingPayments' : ActorMethod<[], Array<PaymentRequest>>,
+  'adminGetUserMessages' : ActorMethod<[Principal], Array<Message>>,
+  'adminIsUserBlocked' : ActorMethod<[Principal], boolean>,
+  'adminReplyToUser' : ActorMethod<[Principal, string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'blockUser' : ActorMethod<[Principal], undefined>,
   'getAddFundsHistory' : ActorMethod<[], Array<Transaction>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCoinBalance' : ActorMethod<[], bigint>,
+  'getMessages' : ActorMethod<[], Array<Message>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getWithdrawalHistory' : ActorMethod<[], Array<Transaction>>,
   'isAvailableForAnonymous' : ActorMethod<[], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'sendMessage' : ActorMethod<[Principal, string], undefined>,
+  'unblockUser' : ActorMethod<[Principal], undefined>,
   'withdraw' : ActorMethod<[string, bigint], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

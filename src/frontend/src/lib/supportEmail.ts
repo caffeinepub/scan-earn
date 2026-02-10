@@ -30,11 +30,12 @@ export function buildMailtoUrl(
 }
 
 /**
- * Opens Gmail compose in a new window/tab with fallback to mailto.
+ * Opens customer care email (99999diamomds@gmail.com) in Gmail compose with fallback to mailto.
  */
-export function openSupportEmail(email: string = '99999diamonds@gmail.com'): void {
-  const subject = 'Face Verification Issue';
-  const body = 'Hello, I was blocked during face verification. Please help.';
+export function openCustomerCareEmail(): void {
+  const email = '99999diamomds@gmail.com';
+  const subject = 'Customer Support Request';
+  const body = 'Hello, I need assistance with...';
   
   const gmailUrl = buildGmailComposeUrl(email, subject, body);
   const mailtoUrl = buildMailtoUrl(email, subject, body);

@@ -1,111 +1,88 @@
 {
   "kind": "build_request",
-  "title": "Remove all authentication flows and eliminate canister/connection system so the app opens directly",
-  "priority": "high",
+  "title": "Show a single upper-sidebar menu on the main home page with dashboard navigation items",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Remove all user-facing authentication and verification flows so users can access the app immediately without any login steps, including: CTR ID, access code, email/password, face authentication, and any Internet Identity sign-in UI.",
+      "text": "Update the main home page upper sidebar menu (the hamburger menu shown in the header on StocksHomePage) so it displays a single consolidated menu containing only these items: Dashboard, Withdrawal, Withdrawal History, Admin Panel, and Funds Transaction History.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Remove all authentications include CTR AND ACCESS CODE AND EMAIL PASSWORD AND FACE AUTHENTICATION USER CAN ACCESS APP DIRECTLY"
+          "1: main home page upper side bar.\n2 dashboard\n3 withdrawal option and withdrawal history and admin panel option and funds transaction history."
         ]
       },
       "acceptanceCriteria": [
-        "No screen, modal, banner, or section prompts the user to enter a CTR ID or access code.",
-        "No screen, modal, banner, or section prompts the user to enter email/password.",
-        "No face verification UI is shown or required anywhere in the app.",
-        "There is no Internet Identity sign-in button or login prompt shown anywhere in the app.",
-        "User can open the app in a fresh browser session and immediately see the main app content without interacting with any authentication UI."
+        "On the main home page header, the hamburger menu opens a single menu panel.",
+        "The menu panel shows exactly 5 navigation items: \"Dashboard\", \"Withdrawal\", \"Withdrawal History\", \"Admin Panel\", and \"Funds Transaction History\".",
+        "The menu panel does not show any other items currently present (e.g., \"Stocks & Funds\", \"Winning History\", \"Customer Care\", \"Customer Support\")."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Remove any feature gating or conditional navigation that depends on authentication, identity state, CTR connection, access code validation, or connection state, and ensure all primary sections (Stocks & Funds, Withdrawal, Customer Support) are accessible immediately on app load.",
+      "text": "Wire the consolidated menu items to the existing section navigation state so each item switches the visible content area accordingly: Dashboard -> home section, Withdrawal -> withdrawal section, Withdrawal History -> withdrawalHistory section, Admin Panel -> adminPanel section, Funds Transaction History -> fundsHistory section.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "USER CAN ACCESS APP DIRECTLY"
+          "2 dashboard\n3 withdrawal option and withdrawal history and admin panel option and funds transaction history."
         ]
       },
       "acceptanceCriteria": [
-        "On initial load, the app shows a primary section (not a login/connection/auth screen).",
-        "Navigation menu contains only main sections (Stocks & Funds, Withdrawal, Customer Support) and none related to login/connection/auth/verification.",
-        "All main sections render and are usable without requiring any identity/CTR/access-code step."
+        "Clicking \"Dashboard\" sets the active section to the existing home/landing section and closes the menu.",
+        "Clicking \"Withdrawal\" sets the active section to \"withdrawal\" and closes the menu.",
+        "Clicking \"Withdrawal History\" sets the active section to \"withdrawalHistory\" and closes the menu.",
+        "Clicking \"Admin Panel\" sets the active section to \"adminPanel\" and closes the menu.",
+        "Clicking \"Funds Transaction History\" sets the active section to \"fundsHistory\" and closes the menu."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Remove CTR/access-code related validation utilities and any UI logic that depends on them so the app no longer enforces CTR ID allowlists or shared access-code allowlists.",
+      "text": "Update user-facing section labels/headings related to funds history so they consistently use the phrase \"Funds Transaction History\" anywhere this destination is shown from the menu and on the funds history section page header.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Remove all authentications include CTR AND ACCESS CODE"
+          "funds transaction history."
         ]
       },
       "acceptanceCriteria": [
-        "No code path in the UI blocks access based on `validateCtrId` or `validateAccessCode` checks.",
-        "No user-facing error messages referencing CTR ID or access code validation appear during normal app usage."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Eliminate the canister/connection configuration system from the end-user experience by removing any connection/config initialization banners, backend reachability banners, offline mode notices, and any connection settings panels from the rendered UI so the app does not present canister configuration as a user task.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "REMOVE CANSISTER SYSTEM PERMANENTLY"
-        ]
-      },
-      "acceptanceCriteria": [
-        "No connection/config/offline/reachability banners or notices are displayed anywhere in the app UI.",
-        "There is no visible UI that asks the user to configure or validate a canister ID."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Remove backend-side authorization requirements so all backend methods used by the app work for anonymous callers, and preserve compatibility with the existing frontend actor creation by keeping any previously-exposed initialization method as a no-op if it is still referenced by generated interfaces.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "Remove all authentications",
-          "REMOVE CANSISTER SYSTEM PERMANENTLY"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend calls used by the UI (profile, balance, add funds, withdraw, histories, health check) succeed for anonymous principals and do not trap due to authorization/permission checks.",
-        "If the frontend still references an access-control initialization method (e.g., `_initializeAccessControlWithSecret`), the backend continues to expose it and it performs no authorization gating (no-op) so the app remains buildable and runnable.",
-        "No backend feature requires CTR/access code/email/password/face verification to call core methods."
+        "In the consolidated menu, the item label reads \"Funds Transaction History\" (not \"Funds History\").",
+        "In the funds history section header, the main title uses \"Funds Transaction History\" in English.",
+        "No other section titles are unintentionally changed."
       ]
     }
   ],
   "constraints": [
-    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything under frontend/src/components/ui (immutable paths).",
-    "Keep backend as a single Motoko actor in backend/main.mo; only add a migration if a stable-state upgrade is required."
+    "Do not edit files under frontend/src/components/ui (read-only).",
+    "Do not edit frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
+    "Keep navigation implemented via the existing flowStore activeSection mechanism (no new routing framework).",
+    "Backend changes are not required for this request."
   ],
   "nonGoals": [
-    "Adding any new authentication mechanism (including third-party auth).",
-    "Adding new product features unrelated to removing authentication and canister/connection UX.",
-    "Introducing external databases or off-chain services."
+    "Adding new backend transaction types or new canister APIs.",
+    "Implementing real-time updates or notifications for transaction history.",
+    "Creating a new standalone Dashboard page route; \"Dashboard\" should map to the existing home section unless explicitly requested otherwise."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

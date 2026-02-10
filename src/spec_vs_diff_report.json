@@ -1,78 +1,30 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-10T07:26:58.090Z",
-  "summary": "The diff removes several user-facing connection/auth UI components by returning null and simplifies IC env config, but it does not clearly remove all auth/CTR gating logic across the app and does not clearly satisfy the backend no-auth + no-op legacy init requirement. The backend still includes an authorization mixin/state, and at least one frontend feature (ScanRewards) is explicitly described as still gated by CTR registration status.",
-  "missing_requirements": [
-    {
-      "id": "REQ-2",
-      "requirement": "Remove any feature gating or conditional navigation that depends on authentication, identity state, CTR connection, access code validation, or connection state, and ensure all primary sections are accessible immediately on app load.",
-      "reason": "The diff summary indicates at least one UI feature remains gated by CTR registration status, which is a form of authentication/CTR gating.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/src/components/scan-earn/ScanRewards.tsx: \"gated by CTR registration status with error toast for unregistered users\")"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "Remove CTR/access-code related validation utilities and any UI logic that depends on them so the app no longer enforces CTR ID allowlists or shared access-code allowlists.",
-      "reason": "While format utilities mention CTR/access-code validation removed, the app still appears to enforce CTR-based gating (CTR registration status) in ScanRewards, which implies remaining CTR-dependent blocking logic.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/src/components/scan-earn/ScanRewards.tsx: \"gated by CTR registration status\")"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "requirement": "Remove backend-side authorization requirements so all backend methods used by the app work for anonymous callers, and preserve compatibility by keeping any previously-exposed initialization method as a no-op if still referenced.",
-      "reason": "backend/main.mo still initializes and includes an authorization mixin/state (MixinAuthorization, AccessControl). Also, the diff does not show any legacy initialization method (e.g., `_initializeAccessControlWithSecret`) being preserved as a no-op.",
-      "evidence": [
-        "backend/main.mo (imports MixinAuthorization and AccessControl; `let accessControlState = AccessControl.initState(); include MixinAuthorization(accessControlState);`)"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-10T17:20:47.454Z",
+  "summary": "Implemented a consolidated hamburger menu with exactly 5 items (Dashboard, Withdrawal, Withdrawal History, Admin Panel, Funds Transaction History) wired to the existing flowStore activeSection mechanism, and updated the Funds History section header to read “Funds Transaction History”. Two additional non-requested metadata/state files were modified.",
+  "missing_requirements": [],
   "hallucinated_features": [
     {
-      "description": "Premium design/visual redesign changes (new color tokens, glassmorphism utilities, typography upgrades, premium elevation/focus utilities).",
-      "reason": "BuildRequest focuses on removing authentication and canister/connection UX; broad visual redesign is not requested.",
+      "description": "Modified project metadata/state file not required by the BuildRequest (project_state.json).",
+      "reason": "BuildRequest only requests frontend UI/menu and label changes; no requirement mentions updating project state metadata files.",
       "evidence": [
-        "frontend-file-summaries.txt (frontend/src/index.css summary)"
+        "project_state.json"
       ]
     },
     {
-      "description": "New/expanded payment UX: AddFunds modal with QR code, UPI app buttons, and transaction ID input flow.",
-      "reason": "Not requested by any REQ; appears to be new product functionality unrelated to removing authentication/connection UX.",
+      "description": "Modified generated/tracking summary file not required by the BuildRequest (frontend-file-summaries.txt).",
+      "reason": "BuildRequest does not request updating repository summary/index files; only menu and section heading changes.",
       "evidence": [
-        "frontend-file-summaries.txt (frontend/src/components/scan-earn/AddFundsModal.tsx summary)"
-      ]
-    },
-    {
-      "description": "NFC/WhatsApp redirect feature for requesting NFC codes (ScanRewards).",
-      "reason": "Not requested; also introduces additional flow unrelated to auth/connection removal.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/src/components/scan-earn/ScanRewards.tsx summary)"
-      ]
-    },
-    {
-      "description": "Branding addition: \"Epik win\" label in hero section.",
-      "reason": "Not requested by any requirement; unrelated to authentication/canister removal.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/src/components/scan-earn/Hero.tsx summary)"
+        "frontend-file-summaries.txt"
       ]
     }
   ],
-  "confidence": 0.72,
+  "confidence": 0.9,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/connection/BackendConfigurationBanner.tsx",
-    "frontend/src/components/connection/BackendReachabilityBanner.tsx",
-    "frontend/src/components/connection/ConfigInitializationBanner.tsx",
-    "frontend/src/components/connection/OfflineModeNotice.tsx",
-    "frontend/src/components/header/HeaderAuthStatus.tsx",
-    "frontend/src/components/scan-earn/ConnectionCanisterSettingsPanel.tsx",
-    "frontend/src/components/scan-earn/CtrConnect.tsx",
-    "frontend/src/components/scan-earn/FaceVerification.tsx",
-    "frontend/src/config/icEnv.ts",
-    "frontend/src/lib/format.ts",
+    "frontend/src/components/nav/HamburgerMenu.tsx",
+    "frontend/src/components/sections/FundsHistorySection.tsx",
     "project_state.json"
   ]
 }

@@ -1,35 +1,36 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "App should open directly with no authentication; remove the canister system permanently.",
+  "summary": "Project includes a gated login flow and protected home page; user requests a single dashboard-style menu in the main home page upper sidebar with key navigation options (Withdrawal, Withdrawal History, Admin Panel, Funds Transaction History).",
   "architectural_notes": [
-    "App must allow direct access with no authentication (no CTR, access code, email/password, or face authentication).",
-    "Canister system is to be removed permanently; ensure dependent flows are deleted/disabled."
+    "Main home page should include one consolidated upper-sidebar menu for primary navigation (Withdrawal, Withdrawal History, Admin Panel, Funds Transaction History)."
   ],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "Menu options (Withdrawal, Withdrawal History, Admin Panel, etc.) are not currently showing; user wants them consolidated into one menu on the main home page upper sidebar."
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-remove-all-user-facing-authentication-and-verification-flows-so-users-can-access-the-app-immediately-without-any-login-steps-including-ctr-id-access-code-email-password-face-authentication-and-any-internet-identity-sign-in-ui",
-      "title": "Remove all user-facing authentication and verification flows so users can access the app immediately without any login steps, including: CTR ID, access code, email/password, face authentication, and any Internet Identity sign-in UI.",
+      "id": "feature-update-the-main-home-page-upper-sidebar-menu-the-hamburger-menu-shown-in-the-header-on-stockshomepage-so-it-displays-a-single-consolidated-menu-containing-only-these-items-dashboard-withdrawal-withdrawal-history-admin-panel-and-funds-transaction-history",
+      "title": "Update the main home page upper sidebar menu (the hamburger menu shown in the header on StocksHomePage) so it displays a single consolidated menu containing only these items: Dashboard, Withdrawal, Withdrawal History, Admin Panel, and Funds Transaction History.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-remove-ctr-access-code-related-validation-utilities-and-any-ui-logic-that-depends-on-them-so-the-app-no-longer-enforces-ctr-id-allowlists-or-shared-access-code-allowlists",
-      "title": "Remove CTR/access-code related validation utilities and any UI logic that depends on them so the app no longer enforces CTR ID allowlists or shared access-code allowlists.",
+      "id": "feature-wire-the-consolidated-menu-items-to-the-existing-section-navigation-state-so-each-item-switches-the-visible-content-area-accordingly-dashboard-home-section-withdrawal-withdrawal-section-withdrawal-history-withdrawalhistory-section-admin-panel-adminpanel-section-funds-transaction-history-fundshistory-section",
+      "title": "Wire the consolidated menu items to the existing section navigation state so each item switches the visible content area accordingly: Dashboard -> home section, Withdrawal -> withdrawal section, Withdrawal History -> withdrawalHistory section, Admin Panel -> adminPanel section, Funds Transaction History -> fundsHistory section.",
       "reqIds": [
-        "REQ-3"
+        "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-eliminate-the-canister-connection-configuration-system-from-the-end-user-experience-by-removing-any-connection-config-initialization-banners-backend-reachability-banners-offline-mode-notices-and-any-connection-settings-panels-from-the-rendered-ui-so-the-app-does-not-present-canister-configuration-as-a-user-task",
-      "title": "Eliminate the canister/connection configuration system from the end-user experience by removing any connection/config initialization banners, backend reachability banners, offline mode notices, and any connection settings panels from the rendered UI so the app does not present canister configuration as a user task.",
+      "id": "feature-update-user-facing-section-labels-headings-related-to-funds-history-so-they-consistently-use-the-phrase-funds-transaction-history-anywhere-this-destination-is-shown-from-the-menu-and-on-the-funds-history-section-page-header",
+      "title": "Update user-facing section labels/headings related to funds history so they consistently use the phrase \"Funds Transaction History\" anywhere this destination is shown from the menu and on the funds history section page header.",
       "reqIds": [
-        "REQ-4"
+        "REQ-3"
       ],
       "version": 1
     }
@@ -37,34 +38,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Remove all authentication methods (CTR, access code, email/password, face authentication) so users can access the app directly.",
+      "summary": "Add a single dashboard-style menu in the main home page upper sidebar containing: Withdrawal, Withdrawal History, Admin Panel, and Funds Transaction History",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Remove the canister system permanently from the app.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Remove any feature gating or conditional navigation that depends on authentication, identity state, CTR connection, access code validation, or connection state, and ensure all primary sections (Stocks & Funds, Withdrawal, Customer Support) are accessible immediately on app load.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Remove backend-side authorization requirements so all backend methods used by the app work for anonymous callers, and preserve compatibility with the existing frontend actor creation by keeping any previously-exposed initialization method as a no-op if it is still referenced by generated interfaces.",
-      "reqIds": [
-        "REQ-5"
-      ],
       "status": "pending"
     }
   ],
-  "projectName": "Remove all authentication flows and eliminate canister/connection system so the app opens directly",
+  "projectName": "Show a single upper-sidebar menu on the main home page with dashboard navigation items",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

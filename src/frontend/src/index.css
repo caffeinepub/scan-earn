@@ -11,7 +11,7 @@
         --card-foreground: 0.15 0 0;
         --popover: 1 0 0;
         --popover-foreground: 0.15 0 0;
-        --primary: 0.58 0.24 250;
+        --primary: 0.65 0.20 160;
         --primary-foreground: 0.98 0 0;
         --secondary: 0.96 0 0;
         --secondary-foreground: 0.15 0 0;
@@ -21,11 +21,12 @@
         --accent-foreground: 0.15 0 0;
         --destructive: 0.58 0.22 25;
         --destructive-foreground: 0.98 0 0;
+        --success: 0.60 0.18 145;
+        --success-foreground: 0.98 0 0;
         --border: 0.90 0 0;
         --input: 0.90 0 0;
-        --ring: 0.58 0.24 250;
+        --ring: 0.65 0.20 160;
         --gold: 0.76 0.16 85;
-        --electric-blue: 0.58 0.24 250;
     }
 
     .dark {
@@ -35,7 +36,7 @@
         --card-foreground: 0.98 0 0;
         --popover: 0.14 0 0;
         --popover-foreground: 0.98 0 0;
-        --primary: 0.68 0.26 250;
+        --primary: 0.70 0.22 160;
         --primary-foreground: 0.98 0 0;
         --secondary: 0.20 0 0;
         --secondary-foreground: 0.98 0 0;
@@ -45,11 +46,12 @@
         --accent-foreground: 0.98 0 0;
         --destructive: 0.62 0.24 25;
         --destructive-foreground: 0.98 0 0;
+        --success: 0.65 0.20 145;
+        --success-foreground: 0.98 0 0;
         --border: 1 0 0 / 10%;
         --input: 1 0 0 / 14%;
-        --ring: 0.68 0.26 250;
+        --ring: 0.70 0.22 160;
         --gold: 0.80 0.18 85;
-        --electric-blue: 0.68 0.26 250;
     }
 
     * {
@@ -97,30 +99,13 @@
         background-color: oklch(var(--gold));
     }
     
-    .text-electric-blue {
-        color: oklch(var(--electric-blue));
-    }
-    
-    .bg-electric-blue {
-        background-color: oklch(var(--electric-blue));
-    }
-    
     .border-gold {
         border-color: oklch(var(--gold));
-    }
-    
-    .border-electric-blue {
-        border-color: oklch(var(--electric-blue));
     }
     
     .glow-gold {
         box-shadow: 0 0 32px -4px oklch(var(--gold) / 0.4),
                     0 0 16px -4px oklch(var(--gold) / 0.3);
-    }
-    
-    .glow-blue {
-        box-shadow: 0 0 32px -4px oklch(var(--electric-blue) / 0.4),
-                    0 0 16px -4px oklch(var(--electric-blue) / 0.3);
     }
 
     .premium-focus {

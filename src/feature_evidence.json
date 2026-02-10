@@ -2,12 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-all-user-facing-authentication-and-verification-flows-so-users-can-access-the-app-immediately-without-any-login-steps-including-ctr-id-access-code-email-password-face-authentication-and-any-internet-identity-sign-in-ui",
-      "featureTitle": "Remove all user-facing authentication and verification flows so users can access the app immediately without any login steps, including: CTR ID, access code, email/password, face authentication, and any Internet Identity sign-in UI.",
+      "featureId": "feature-update-the-main-home-page-upper-sidebar-menu-the-hamburger-menu-shown-in-the-header-on-stockshomepage-so-it-displays-a-single-consolidated-menu-containing-only-these-items-dashboard-withdrawal-withdrawal-history-admin-panel-and-funds-transaction-history",
+      "featureTitle": "Update the main home page upper sidebar menu (the hamburger menu shown in the header on StocksHomePage) so it displays a single consolidated menu containing only these items: Dashboard, Withdrawal, Withdrawal History, Admin Panel, and Funds Transaction History.",
       "files": [
-        "frontend/src/components/header/HeaderAuthStatus.tsx",
-        "frontend/src/components/scan-earn/CtrConnect.tsx",
-        "frontend/src/components/scan-earn/FaceVerification.tsx"
+        "frontend/src/components/nav/HamburgerMenu.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,7 +14,8 @@
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
         "authorization@4.0.0",
-        "camera@1.0.0"
+        "camera@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
         "REQ-1"
@@ -24,10 +23,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-remove-ctr-access-code-related-validation-utilities-and-any-ui-logic-that-depends-on-them-so-the-app-no-longer-enforces-ctr-id-allowlists-or-shared-access-code-allowlists",
-      "featureTitle": "Remove CTR/access-code related validation utilities and any UI logic that depends on them so the app no longer enforces CTR ID allowlists or shared access-code allowlists.",
+      "featureId": "feature-wire-the-consolidated-menu-items-to-the-existing-section-navigation-state-so-each-item-switches-the-visible-content-area-accordingly-dashboard-home-section-withdrawal-withdrawal-section-withdrawal-history-withdrawalhistory-section-admin-panel-adminpanel-section-funds-transaction-history-fundshistory-section",
+      "featureTitle": "Wire the consolidated menu items to the existing section navigation state so each item switches the visible content area accordingly: Dashboard -> home section, Withdrawal -> withdrawal section, Withdrawal History -> withdrawalHistory section, Admin Panel -> adminPanel section, Funds Transaction History -> fundsHistory section.",
       "files": [
-        "frontend/src/lib/format.ts"
+        "frontend/src/components/nav/HamburgerMenu.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -36,23 +35,20 @@
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
         "authorization@4.0.0",
-        "camera@1.0.0"
+        "camera@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
-        "REQ-3"
+        "REQ-2"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-eliminate-the-canister-connection-configuration-system-from-the-end-user-experience-by-removing-any-connection-config-initialization-banners-backend-reachability-banners-offline-mode-notices-and-any-connection-settings-panels-from-the-rendered-ui-so-the-app-does-not-present-canister-configuration-as-a-user-task",
-      "featureTitle": "Eliminate the canister/connection configuration system from the end-user experience by removing any connection/config initialization banners, backend reachability banners, offline mode notices, and any connection settings panels from the rendered UI so the app does not present canister configuration as a user task.",
+      "featureId": "feature-update-user-facing-section-labels-headings-related-to-funds-history-so-they-consistently-use-the-phrase-funds-transaction-history-anywhere-this-destination-is-shown-from-the-menu-and-on-the-funds-history-section-page-header",
+      "featureTitle": "Update user-facing section labels/headings related to funds history so they consistently use the phrase \"Funds Transaction History\" anywhere this destination is shown from the menu and on the funds history section page header.",
       "files": [
-        "frontend/src/components/connection/BackendConfigurationBanner.tsx",
-        "frontend/src/components/connection/BackendReachabilityBanner.tsx",
-        "frontend/src/components/connection/ConfigInitializationBanner.tsx",
-        "frontend/src/components/connection/OfflineModeNotice.tsx",
-        "frontend/src/components/scan-earn/ConnectionCanisterSettingsPanel.tsx",
-        "frontend/src/config/icEnv.ts"
+        "frontend/src/components/nav/HamburgerMenu.tsx",
+        "frontend/src/components/sections/FundsHistorySection.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -61,10 +57,11 @@
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
         "authorization@4.0.0",
-        "camera@1.0.0"
+        "camera@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
-        "REQ-4"
+        "REQ-3"
       ],
       "confidence": "high"
     }

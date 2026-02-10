@@ -26,7 +26,7 @@ export function HighLowTradingGraphic() {
   const isFlat = change === 0;
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className="w-full max-w-4xl mx-auto glass-strong border-primary/10">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">Live Trading Overview</CardTitle>
       </CardHeader>
@@ -76,7 +76,7 @@ export function HighLowTradingGraphic() {
               <Line 
                 type="monotone" 
                 dataKey="value" 
-                stroke="hsl(var(--electric-blue))" 
+                stroke="hsl(var(--primary))" 
                 strokeWidth={2}
                 dot={false}
                 isAnimationActive={false}
@@ -87,9 +87,9 @@ export function HighLowTradingGraphic() {
 
         {/* Current Value with Live Direction */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="text-center p-4 rounded-lg bg-muted/50 border border-border">
+          <div className="text-center p-4 rounded-lg glass border border-border">
             <p className="text-sm text-muted-foreground font-medium mb-1">Current Value</p>
-            <p className="text-3xl font-bold text-electric-blue">{current.toFixed(2)}</p>
+            <p className="text-3xl font-bold text-primary">{current.toFixed(2)}</p>
           </div>
 
           {/* Live Movement Indicator */}
